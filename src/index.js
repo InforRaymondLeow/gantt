@@ -184,22 +184,22 @@ export default class Gantt {
 
         if (view_mode === VIEW_MODE.DAY) {
             this.options.step = 24;
-            this.options.column_width = 38;
+            // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.HALF_DAY) {
             this.options.step = 24 / 2;
-            this.options.column_width = 38;
+            // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
             this.options.step = 24 / 4;
-            this.options.column_width = 38;
+            // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.WEEK) {
             this.options.step = 24 * 7;
-            this.options.column_width = 140;
+            // this.options.column_width = 140;
         } else if (view_mode === VIEW_MODE.MONTH) {
             this.options.step = 24 * 30;
-            this.options.column_width = 120;
+            // this.options.column_width = 120;
         } else if (view_mode === VIEW_MODE.YEAR) {
             this.options.step = 24 * 365;
-            this.options.column_width = 120;
+            // this.options.column_width = 120;
         }
     }
 
@@ -225,19 +225,19 @@ export default class Gantt {
         this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
 
         // add date padding on both sides
-        if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
-            this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
-            this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
-        } else if (this.view_is(VIEW_MODE.MONTH)) {
-            this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
-            this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
-        } else if (this.view_is(VIEW_MODE.YEAR)) {
-            this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
-            this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
-        } else {
-            this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
-            this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
-        }
+        // if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
+        //     this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
+        //     this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
+        // } else if (this.view_is(VIEW_MODE.MONTH)) {
+        //     this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
+        //     this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
+        // } else if (this.view_is(VIEW_MODE.YEAR)) {
+        //     this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
+        //     this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
+        // } else {
+        //     this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
+        //     this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
+        // }
     }
 
     setup_date_values() {

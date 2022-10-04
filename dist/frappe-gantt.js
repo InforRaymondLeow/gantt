@@ -1212,22 +1212,22 @@ var Gantt = (function () {
 
             if (view_mode === VIEW_MODE.DAY) {
                 this.options.step = 24;
-                this.options.column_width = 38;
+                // this.options.column_width = 38;
             } else if (view_mode === VIEW_MODE.HALF_DAY) {
                 this.options.step = 24 / 2;
-                this.options.column_width = 38;
+                // this.options.column_width = 38;
             } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
                 this.options.step = 24 / 4;
-                this.options.column_width = 38;
+                // this.options.column_width = 38;
             } else if (view_mode === VIEW_MODE.WEEK) {
                 this.options.step = 24 * 7;
-                this.options.column_width = 140;
+                // this.options.column_width = 140;
             } else if (view_mode === VIEW_MODE.MONTH) {
                 this.options.step = 24 * 30;
-                this.options.column_width = 120;
+                // this.options.column_width = 120;
             } else if (view_mode === VIEW_MODE.YEAR) {
                 this.options.step = 24 * 365;
-                this.options.column_width = 120;
+                // this.options.column_width = 120;
             }
         }
 
