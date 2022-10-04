@@ -47,7 +47,7 @@ $handle-color: #ddd !default;
 	}
 
 	.bar {
-		fill: $bar-color;
+		// fill: $bar-color;
 		stroke: $bar-stroke;
 		stroke-width: 0;
 		transition: stroke-width .3s ease;
