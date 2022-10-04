@@ -131,6 +131,42 @@ $handle-color: #ddd !default;
 	.hide {
 		display: none;
 	}
+
+	.not-started {
+		color: #69ada3 !important;
+	  }
+	  
+	  .ready-to-start {
+		color: #89bf65 !important;
+	  }
+	  
+	  .planned {
+		color: #397514 !important;
+	  }
+	  
+	  .started {
+		color: #54a1d3 !important;
+	  }
+	  
+	  .not-started-late {
+		color: #c65f5f !important;
+	  }
+	  
+	  .not-finished-late {
+		color: #d66221 !important;
+	  }
+	  
+	  .partly-reported {
+		fill: #f2bc41 !important;
+	  }
+	  
+	  .finished {
+		color: #737373 !important;
+	  }
+	  
+	  .default {
+		color: #ffffff !important;
+	  }
 }
 
 .gantt-container {
