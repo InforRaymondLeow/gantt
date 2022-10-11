@@ -320,7 +320,7 @@ export default class Gantt {
 
         $.attr(this.$svg, {
             // height: grid_height + this.options.padding + 100,
-            height: grid_height + 5, // Warning! Hard-coded
+            height: grid_height - 5, // Warning! Hard-coded
             width: '100%',
         });
     }
