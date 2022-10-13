@@ -490,17 +490,18 @@ var Gantt = (function () {
     };
 
     class Bar {
-        constructor(gantt, task) {
-            this.set_defaults(gantt, task);
+        constructor(gantt, task, callback) {
+            this.set_defaults(gantt, task, callback);
             this.prepare();
             this.draw();
             this.bind();
         }
 
-        set_defaults(gantt, task) {
+        set_defaults(gantt, task, callback) {
             this.action_completed = false;
             this.gantt = gantt;
             this.task = task;
+            this.callback = callback
         }
 
         prepare() {
@@ -753,6 +754,7 @@ var Gantt = (function () {
                 this.task,
                 new_start_date,
                 date_utils.add(new_end_date, -1, 'second'),
+                this.callback
             ]);
         }
 
@@ -1627,7 +1629,7 @@ var Gantt = (function () {
 
         make_bars() {
             this.bars = this.tasks.map((task) => {
-                const bar = new Bar(this, task);
+                const bar = new Bar(this, task, this.callback);
                 this.layers.bar.appendChild(bar.group);
                 return bar;
             });
