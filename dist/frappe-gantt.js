@@ -1074,10 +1074,11 @@ var Gantt = (function () {
     };
 
     class Gantt {
-        constructor(wrapper, tasks, options) {
+        constructor(wrapper, tasks, options, callback) {
             this.setup_wrapper(wrapper);
             this.setup_options(options);
             this.setup_tasks(tasks);
+            this.setup_callback(callback)
             // initialize with default view mode
             this.change_view_mode();
             this.bind_events();
@@ -1212,6 +1213,10 @@ var Gantt = (function () {
             });
 
             this.setup_dependencies();
+        }
+
+        setup_callback() {
+            this.callback = this.callback
         }
 
         setup_dependencies() {

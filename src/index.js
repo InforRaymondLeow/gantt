@@ -160,7 +160,7 @@ export default class Gantt {
     setup_callback() {
         this.callback = this.callback
     }
-    
+
     setup_dependencies() {
         this.dependency_map = {};
         for (let t of this.tasks) {
@@ -577,7 +577,7 @@ export default class Gantt {
 
     make_bars() {
         this.bars = this.tasks.map((task) => {
-            const bar = new Bar(this, task);
+            const bar = new Bar(this, task, this.callback);
             this.layers.bar.appendChild(bar.group);
             return bar;
         });
