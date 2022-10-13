@@ -157,8 +157,8 @@ export default class Gantt {
         this.setup_dependencies();
     }
 
-    setup_callback() {
-        this.callback = this.callback
+    setup_callback(callback) {
+        this.callback = callback
     }
 
     setup_dependencies() {
