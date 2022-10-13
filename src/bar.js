@@ -98,7 +98,7 @@ export default class Bar {
             x: this.x,
             y: this.y + 15,
             width: this.progress_width,
-            height: this.height,
+            height: this.height / 4,
             rx: this.corner_radius,
             ry: this.corner_radius,
             class: 'bar-progress',
