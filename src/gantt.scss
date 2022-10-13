@@ -54,7 +54,8 @@ $handle-color: #ddd !default;
 		user-select: none;
 	}
 	.bar-progress {
-		fill: $blue;
+		// fill: $blue;
+		fill: #E66467;
 	}
 	.bar-invalid {
 		fill: transparent;
@@ -113,7 +114,8 @@ $handle-color: #ddd !default;
 			}
 
 			.bar-progress {
-				fill: darken($blue, 5);
+				// fill: darken($blue, 5);
+				fill: #E66467;
 			}
 		}
 	}
@@ -146,7 +148,7 @@ $handle-color: #ddd !default;
 	}
 	  
 	.stopped {
-		fill: #DF3539 !important
+		fill: #B7B7BA !important
 	}
 
 	.completed {
