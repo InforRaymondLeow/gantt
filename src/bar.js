@@ -96,7 +96,7 @@ export default class Bar {
         if (this.invalid) return;
         this.$bar_progress = createSVG('rect', {
             x: this.x,
-            y: this.y,
+            y: this.y + 15,
             width: this.progress_width,
             height: this.height,
             rx: this.corner_radius,

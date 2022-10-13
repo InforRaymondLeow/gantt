@@ -97,7 +97,8 @@ $handle-color: #ddd !default;
 			}
 
 			.bar-progress {
-				fill: darken($blue, 5);
+				// fill: darken($blue, 5);
+				fill: #E66467;
 			}
 
 			.handle {
@@ -133,37 +134,25 @@ $handle-color: #ddd !default;
 	}
 
 	.not-started {
-		fill: #69ada3 !important;
+		fill: #A1E4BF !important;
 	}
 	  
 	.ready-to-start {
-		fill: #89bf65 !important;
-	}
-	  
-	.planned {
-		fill: #397514 !important;
+		fill: #4DCC86 !important
 	}
 	  
 	.started {
-		fill: #54a1d3 !important;
+		fill: #FA9601 !important
 	}
 	  
-	.not-started-late {
-		fill: #c65f5f !important;
+	.stopped {
+		fill: #DF3539 !important
 	}
-	  
-	.not-finished-late {
-		fill: #d66221 !important;
+
+	.completed {
+		fill: #FA9601 !important
 	}
-	  
-	.partly-reported {
-		fill: #f2bc41 !important;
-	}
-	  
-	.finished {
-		fill: #737373 !important;
-	}
-	  
+
 	.default {
 		fill: #ffffff !important;
 	}
