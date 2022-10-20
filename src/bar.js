@@ -2,18 +2,18 @@ import date_utils from './date_utils';
 import { $, createSVG, animateSVG } from './svg_utils';
 
 export default class Bar {
-    constructor(gantt, task, callback) {
-        this.set_defaults(gantt, task, callback);
+    constructor(gantt, task, context) {
+        this.set_defaults(gantt, task, context);
         this.prepare();
         this.draw();
         this.bind();
     }
 
-    set_defaults(gantt, task, callback) {
+    set_defaults(gantt, task, context) {
         this.action_completed = false;
         this.gantt = gantt;
         this.task = task;
-        this.callback = callback
+        this.context = context
     }
 
     prepare() {
@@ -266,7 +266,7 @@ export default class Bar {
             this.task,
             new_start_date,
             date_utils.add(new_end_date, -1, 'second'),
-            this.callback
+            this.context
         ]);
     }
 

@@ -16,11 +16,11 @@ const VIEW_MODE = {
 };
 
 export default class Gantt {
-    constructor(wrapper, tasks, options, callback) {
+    constructor(wrapper, tasks, options, context) {
         this.setup_wrapper(wrapper);
         this.setup_options(options);
         this.setup_tasks(tasks);
-        this.setup_callback(callback)
+        this.setup_context(context)
         // initialize with default view mode
         this.change_view_mode();
         this.bind_events();
@@ -157,8 +157,8 @@ export default class Gantt {
         this.setup_dependencies();
     }
 
-    setup_callback(callback) {
-        this.callback = callback
+    setup_context(context) {
+        this.context = context
     }
 
     setup_dependencies() {
@@ -577,7 +577,7 @@ export default class Gantt {
 
     make_bars() {
         this.bars = this.tasks.map((task) => {
-            const bar = new Bar(this, task, this.callback);
+            const bar = new Bar(this, task, this.context);
             this.layers.bar.appendChild(bar.group);
             return bar;
         });
