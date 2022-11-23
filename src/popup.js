@@ -48,7 +48,7 @@ export default class Popup {
             position_meta = options.target_element.getBBox();
         }
 
-        if (options.position !== 'left') {
+        if (options.position === 'left') {
             this.parent.style.right = 
                 (position_meta.x - 10) + 'px';
             this.parent.style.top = position_meta.y + 'px';
