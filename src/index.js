@@ -500,7 +500,7 @@ export default class Gantt {
             upper_y: this.options.header_height - 25,
         };
         const lower_text_font_width = 12
-        const correct_mod = (base_pos.x % lower_text_font_width) <= this.options.column_width
+        const correct_mod = (base_pos.x % lower_text_font_width) < this.options.column_width
         const date_text = {
             // 'Quarter Day_lower': date_utils.format(
             //     date,
