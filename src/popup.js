@@ -49,9 +49,9 @@ export default class Popup {
         }
 
         const margin = 10
-        const right_side_space = this.grid_size.width - position_meta.x - position_meta.width - margin
-
-        if (0 < right_side_space) {
+        const right_side_space = (this.grid_size.width - position_meta.x - 
+            position_meta.width - this.parent.clientWidth)
+        if (margin < right_side_space) {
             options.position = 'right';
         } else {
             options.position = 'left'
