@@ -53,7 +53,7 @@ export default class Popup {
                 (position_meta.x - this.parent.clientWidth - 10) + 'px';
             this.parent.style.top = (position_meta.y - this.parent.clientHeight + position_meta.height) + 'px';
 
-            this.pointer.style.transform = 'rotateZ(0deg)';
+            this.pointer.style.transform = 'rotateZ(270deg)';
             this.pointer.style.left = (this.parent.clientWidth + 7) + 'px';
             this.pointer.style.top = (this.parent.clientHeight - 2) + 'px';
         } else {
