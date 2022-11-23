@@ -486,11 +486,11 @@ export default class Gantt {
     get_dates_to_draw() {
         let last_date = null;
         const first_date = this.dates[0]
-        const final_date = this.dates[this.dates]
+        const final_date = this.dates[this.dates.length-1]
         const time_diff = final_date.getTime() - first_date.getTime()
-        const day_diff = time_diff / (1000 * 3600 * 24)
+        const dates_span = time_diff / (1000 * 3600 * 24)
         const dates = this.dates.map((date, i) => {
-            const d = this.get_date_info(date, last_date, i, day_diff);
+            const d = this.get_date_info(date, last_date, i, dates_span);
             last_date = date;
             return d;
         });
