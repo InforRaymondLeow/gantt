@@ -492,7 +492,9 @@ export default class Gantt {
 
     get_date_info(date, last_date, i) {
         if (!last_date) {
-            last_date = date_utils.add(date, 1, 'year');
+            // last_date = date_utils.add(date, -1, 'year');
+            last_date = date_utils.add(date, -1, 'month')
+            last_date = date_utils.add(last_date, -1, 'day')
         }
         const base_pos = {
             x: i * this.options.column_width,
