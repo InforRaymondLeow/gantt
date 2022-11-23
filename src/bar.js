@@ -218,8 +218,8 @@ export default class Bar {
             subtitle: subtitle,
             task: this.task,
             grid_size: {
-                grid_height: this.context.grid_height,
-                grid_width: this.context.grid_width
+                height: this.context.grid_height,
+                width: this.context.grid_width
             }
         });
     }

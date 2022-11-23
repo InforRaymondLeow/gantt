@@ -24,9 +24,8 @@ export default class Popup {
         if (!options.target_element) {
             throw new Error('target_element is required to show popup');
         }
-        if (!options.position) {
-            options.position = 'left';
-        }
+
+        
         const target_element = options.target_element;
 
         if (this.custom_html) {
@@ -47,6 +46,15 @@ export default class Popup {
             position_meta = target_element.getBoundingClientRect();
         } else if (target_element instanceof SVGElement) {
             position_meta = options.target_element.getBBox();
+        }
+
+        const margin = 10
+        const right_side_space = this.grid_size.width - position_meta.x - position_meta.width - margin
+
+        if (0 < right_side_space) {
+            options.position = 'right';
+        } else {
+            options.position = 'left'
         }
 
         if (options.position === 'left') {
