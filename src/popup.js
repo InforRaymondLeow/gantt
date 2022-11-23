@@ -49,12 +49,12 @@ export default class Popup {
         }
 
         if (options.position === 'left') {
-            this.parent.style.right = 
+            this.parent.style.left = 
                 (position_meta.x - 10) + 'px';
             this.parent.style.top = position_meta.y + 'px';
 
             this.pointer.style.transform = 'rotateZ(270deg)';
-            this.pointer.style.right = '-7px';
+            this.pointer.style.left = '7px';
             this.pointer.style.top = '2px';
         } else {
             this.parent.style.left =
