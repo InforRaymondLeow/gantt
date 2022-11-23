@@ -557,7 +557,7 @@ export default class Gantt {
             //         : '',
         };
 
-        const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0)
+        const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate()
         const current_day = date.getDate()
         const x_pos = {
             // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
