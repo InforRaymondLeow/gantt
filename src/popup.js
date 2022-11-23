@@ -51,11 +51,11 @@ export default class Popup {
         if (options.position === 'left') {
             this.parent.style.left = 
                 (position_meta.x - this.parent.clientWidth - 10) + 'px';
-            this.parent.style.top = (position_meta.y - this.parent.clientHeight) + 'px';
+            this.parent.style.top = (position_meta.y - this.parent.clientHeight + position_meta.height) + 'px';
 
-            this.pointer.style.transform = 'rotateZ(180deg)';
-            this.pointer.style.left = '7px';
-            this.pointer.style.top = '2px';
+            this.pointer.style.transform = 'rotateZ(0deg)';
+            this.pointer.style.left = (this.parent.clientWidth + 7) + 'px';
+            this.pointer.style.top = (this.parent.clientHeight - 2) + 'px';
         } else {
             this.parent.style.left =
                 position_meta.x + (position_meta.width + 10) + 'px';
