@@ -499,7 +499,7 @@ export default class Gantt {
             lower_y: this.options.header_height,
             upper_y: this.options.header_height - 25,
         };
-        const lower_text_font_width = 12
+        const lower_text_font_width = 18
         let column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
         const correct_mod = i % column_threshold === 0
         const date_text = {
@@ -514,7 +514,7 @@ export default class Gantt {
             //     this.options.language
             // ),
             Day_lower:
-                (correct_mod && (date.getDate() !== last_date.getDate()))
+                (correct_mod && (date.getDate() !== last_date.getDate() || i === 0))
                     ? date_utils.format(date, 'D', this.options.language)
                     : '',
             // Week_lower:
