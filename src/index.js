@@ -494,78 +494,79 @@ export default class Gantt {
         if (!last_date) {
             last_date = date_utils.add(date, 1, 'year');
         }
-        const date_text = {
-            'Quarter Day_lower': date_utils.format(
-                date,
-                'HH',
-                this.options.language
-            ),
-            'Half Day_lower': date_utils.format(
-                date,
-                'HH',
-                this.options.language
-            ),
-            Day_lower:
-                date.getDate() !== last_date.getDate()
-                    ? date_utils.format(date, 'D', this.options.language)
-                    : '',
-            Week_lower:
-                date.getMonth() !== last_date.getMonth()
-                    ? date_utils.format(date, 'D MMM', this.options.language)
-                    : date_utils.format(date, 'D', this.options.language),
-            Month_lower: date_utils.format(date, 'MMMM', this.options.language),
-            Year_lower: date_utils.format(date, 'YYYY', this.options.language),
-            'Quarter Day_upper':
-                date.getDate() !== last_date.getDate()
-                    ? date_utils.format(date, 'D MMM', this.options.language)
-                    : '',
-            'Half Day_upper':
-                date.getDate() !== last_date.getDate()
-                    ? date.getMonth() !== last_date.getMonth()
-                        ? date_utils.format(
-                              date,
-                              'D MMM',
-                              this.options.language
-                          )
-                        : date_utils.format(date, 'D', this.options.language)
-                    : '',
-            Day_upper:
-                date.getMonth() !== last_date.getMonth()
-                    ? date_utils.format(date, 'MMMM', this.options.language)
-                    : '',
-            Week_upper:
-                date.getMonth() !== last_date.getMonth()
-                    ? date_utils.format(date, 'MMMM', this.options.language)
-                    : '',
-            Month_upper:
-                date.getFullYear() !== last_date.getFullYear()
-                    ? date_utils.format(date, 'YYYY', this.options.language)
-                    : '',
-            Year_upper:
-                date.getFullYear() !== last_date.getFullYear()
-                    ? date_utils.format(date, 'YYYY', this.options.language)
-                    : '',
-        };
-
         const base_pos = {
             x: i * this.options.column_width,
             lower_y: this.options.header_height,
             upper_y: this.options.header_height - 25,
         };
+        const correct_mod = this.options.column_width <= (base_pos % 12) 
+        const date_text = {
+            // 'Quarter Day_lower': date_utils.format(
+            //     date,
+            //     'HH',
+            //     this.options.language
+            // ),
+            // 'Half Day_lower': date_utils.format(
+            //     date,
+            //     'HH',
+            //     this.options.language
+            // ),
+            Day_lower:
+                (correct_mod && (date.getDate() !== last_date.getDate()))
+                    ? date_utils.format(date, 'D', this.options.language)
+                    : '',
+            // Week_lower:
+            //     date.getMonth() !== last_date.getMonth()
+            //         ? date_utils.format(date, 'D MMM', this.options.language)
+            //         : date_utils.format(date, 'D', this.options.language),
+            // Month_lower: date_utils.format(date, 'MMMM', this.options.language),
+            // Year_lower: date_utils.format(date, 'YYYY', this.options.language),
+            // 'Quarter Day_upper':
+            //     date.getDate() !== last_date.getDate()
+            //         ? date_utils.format(date, 'D MMM', this.options.language)
+            //         : '',
+            // 'Half Day_upper':
+            //     date.getDate() !== last_date.getDate()
+            //         ? date.getMonth() !== last_date.getMonth()
+            //             ? date_utils.format(
+            //                   date,
+            //                   'D MMM',
+            //                   this.options.language
+            //               )
+            //             : date_utils.format(date, 'D', this.options.language)
+            //         : '',
+            Day_upper:
+                date.getMonth() !== last_date.getMonth()
+                    ? date_utils.format(date, 'MMMM', this.options.language)
+                    : '',
+            // Week_upper:
+            //     date.getMonth() !== last_date.getMonth()
+            //         ? date_utils.format(date, 'MMMM', this.options.language)
+            //         : '',
+            // Month_upper:
+            //     date.getFullYear() !== last_date.getFullYear()
+            //         ? date_utils.format(date, 'YYYY', this.options.language)
+            //         : '',
+            // Year_upper:
+            //     date.getFullYear() !== last_date.getFullYear()
+            //         ? date_utils.format(date, 'YYYY', this.options.language)
+            //         : '',
+        };
+
 
         const x_pos = {
-            'Quarter Day_lower': (this.options.column_width * 4) / 2,
-            'Quarter Day_upper': 0,
-            'Half Day_lower': (this.options.column_width * 2) / 2,
-            'Half Day_upper': 0,
+            // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
+            // 'Quarter Day_upper': 0,
+            // 'Half Day_lower': (this.options.column_width * 2) / 2,
+            // 'Half Day_upper': 0,
             Day_lower: this.options.column_width / 2,
             Day_upper: (this.options.column_width * 30) / 2,
-            Week_lower: 0,
-            Week_upper: (this.options.column_width * 4) / 2,
-            Month_lower: this.options.column_width / 2,
-            Month_upper: (this.options.column_width * 12) / 2,
-            Year_lower: this.options.column_width / 2,
-            Year_upper: (this.options.column_width * 30) / 2,
+            // Week_lower: 0,
+            // Week_upper: (this.options.column_width * 4) / 2,
+            // Month_lower: this.options.column_width / 2,
+            // Month_upper: (this.options.column_width * 12) / 2,
+            // Year_lower: this.options.column_width / 2,
+            // Year_upper: (this.options.column_width * 30) / 2,
         };
 
         return {
