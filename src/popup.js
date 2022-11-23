@@ -48,7 +48,15 @@ export default class Popup {
             position_meta = options.target_element.getBBox();
         }
 
-        if (options.position === 'right') {
+        if (options.position !== 'left') {
+            this.parent.style.right = 
+                (position_meta.x - 10) + 'px';
+            this.parent.style.top = position_meta.y + 'px';
+
+            this.pointer.style.transform = 'rotateZ(270deg)';
+            this.pointer.style.right = '-7px';
+            this.pointer.style.top = '2px';
+        } else {
             this.parent.style.left =
                 position_meta.x + (position_meta.width + 10) + 'px';
             this.parent.style.top = position_meta.y + 'px';
