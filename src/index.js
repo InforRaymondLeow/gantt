@@ -557,14 +557,16 @@ export default class Gantt {
             //         : '',
         };
 
-
+        const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0)
+        const current_day = date.getDate()
         const x_pos = {
             // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
             // 'Quarter Day_upper': 0,
             // 'Half Day_lower': (this.options.column_width * 2) / 2,
             // 'Half Day_upper': 0,
             Day_lower: this.options.column_width / 2,
-            Day_upper: (this.options.column_width * 30) / 2,
+            // Day_upper: (this.options.column_width * 30) / 2,
+            Day_upper: (this.options.column_width * (days_per_month - current_day)) / 2,
             // Week_lower: 0,
             // Week_upper: (this.options.column_width * 4) / 2,
             // Month_lower: this.options.column_width / 2,
