@@ -1,5 +1,5 @@
 import date_utils from './date_utils';
-import { $, createSVG, animateSVG } from './svg_utils';
+import { $, animateSVG, createSVG } from './svg_utils';
 
 export default class Bar {
     constructor(gantt, task, context) {
@@ -217,6 +217,10 @@ export default class Bar {
             title: this.task.name,
             subtitle: subtitle,
             task: this.task,
+            grid_size: {
+                grid_height: this.context.grid_height,
+                grid_width: this.context.grid_width
+            }
         });
     }
 

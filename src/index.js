@@ -1,8 +1,8 @@
-import date_utils from './date_utils';
-import { $, createSVG } from './svg_utils';
-import Bar from './bar';
 import Arrow from './arrow';
+import Bar from './bar';
+import date_utils from './date_utils';
 import Popup from './popup';
+import { $, createSVG } from './svg_utils';
 
 import './gantt.scss';
 
@@ -314,6 +314,9 @@ export default class Gantt {
             (this.options.bar_height + this.options.padding) *
                 this.tasks.length;
 
+        this.context.grid_width = grid_width
+        this.context.grid_height = grid_height
+        
         createSVG('rect', {
             x: 0,
             y: 0,
@@ -893,7 +896,8 @@ export default class Gantt {
         if (!this.popup) {
             this.popup = new Popup(
                 this.popup_wrapper,
-                this.options.custom_popup_html
+                this.options.custom_popup_html,
+                options.grid_size
             );
         }
         this.popup.show(options);

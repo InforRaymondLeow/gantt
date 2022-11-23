@@ -1,7 +1,8 @@
 export default class Popup {
-    constructor(parent, custom_html) {
+    constructor(parent, custom_html, grid_size) {
         this.parent = parent;
         this.custom_html = custom_html;
+        this.grid_size = grid_size;
         this.make();
     }
 
@@ -55,7 +56,7 @@ export default class Popup {
 
             this.pointer.style.transform = 'rotateZ(270deg)';
             this.pointer.style.left = (this.parent.clientWidth + 7) + 'px';
-            this.pointer.style.top = (this.parent.clientHeight - 2) + 'px';
+            this.pointer.style.top = (this.parent.clientHeight - 10 - 2) + 'px';
         } else {
             this.parent.style.left =
                 position_meta.x + (position_meta.width + 10) + 'px';
