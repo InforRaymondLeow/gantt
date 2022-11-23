@@ -452,6 +452,9 @@ export default class Gantt {
     }
 
     make_dates() {
+        if (this.dates.length === 0) {
+            return
+        }
         for (let date of this.get_dates_to_draw()) {
             createSVG('text', {
                 x: date.lower_x,
@@ -482,15 +485,19 @@ export default class Gantt {
 
     get_dates_to_draw() {
         let last_date = null;
+        const first_date = this.dates[0]
+        const final_date = this.dates[this.dates]
+        const time_diff = final_date.getTime() - first_date.getTime()
+        const day_diff = time_diff / (1000 * 3600 * 24)
         const dates = this.dates.map((date, i) => {
-            const d = this.get_date_info(date, last_date, i);
+            const d = this.get_date_info(date, last_date, i, day_diff);
             last_date = date;
             return d;
         });
         return dates;
     }
 
-    get_date_info(date, last_date, i) {
+    get_date_info(date, last_date, i, dates_span) {
         if (!last_date) {
             // last_date = date_utils.add(date, -1, 'year');
             last_date = date_utils.add(date, -1, 'month')
@@ -559,6 +566,7 @@ export default class Gantt {
 
         const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate()
         const current_day = date.getDate()
+        const days_span = Math.min(dates_span, days_per_month - current_day)
         const x_pos = {
             // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
             // 'Quarter Day_upper': 0,
@@ -566,7 +574,7 @@ export default class Gantt {
             // 'Half Day_upper': 0,
             Day_lower: this.options.column_width / 2,
             // Day_upper: (this.options.column_width * 30) / 2,
-            Day_upper: (this.options.column_width * (days_per_month - current_day)) / 2,
+            Day_upper: (this.options.column_width * days_span) / 2,
             // Week_lower: 0,
             // Week_upper: (this.options.column_width * 4) / 2,
             // Month_lower: this.options.column_width / 2,
