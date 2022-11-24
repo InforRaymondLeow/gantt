@@ -508,9 +508,17 @@ export default class Gantt {
             lower_y: this.options.header_height,
             upper_y: this.options.header_height - 25,
         };
+
+        const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate()
+        const current_day = date.getDate()
+        const days_span = Math.min(dates_span, days_per_month - current_day)
         const lower_text_font_width = 18
-        let column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
-        const correct_mod = i % column_threshold === 0
+        const upper_text_font_width = 60
+        const month_span = (this.options.column_width * days_span)
+        const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
+        const upper_column_threshold = Math.ceil(upper_text_font_width / month_span)
+        const correct_lower_text_mod = i % lower_column_threshold === 0
+        const correct_upper_text_mod = i % upper_column_threshold === 0
         const date_text = {
             // 'Quarter Day_lower': date_utils.format(
             //     date,
@@ -523,8 +531,12 @@ export default class Gantt {
             //     this.options.language
             // ),
             Day_lower:
-                (correct_mod && (date.getDate() !== last_date.getDate() || i === 0))
+                (correct_lower_text_mod && (date.getDate() !== last_date.getDate() || i === 0))
                     ? date_utils.format(date, 'D', this.options.language)
+                    : '',
+            Day_upper:
+                (correct_upper_text_mod && date.getMonth() !== last_date.getMonth() || i === 0)
+                    ? date_utils.format(date, 'MMMM', this.options.language)
                     : '',
             // Week_lower:
             //     date.getMonth() !== last_date.getMonth()
@@ -546,10 +558,6 @@ export default class Gantt {
             //               )
             //             : date_utils.format(date, 'D', this.options.language)
             //         : '',
-            Day_upper:
-                date.getMonth() !== last_date.getMonth()
-                    ? date_utils.format(date, 'MMMM', this.options.language)
-                    : '',
             // Week_upper:
             //     date.getMonth() !== last_date.getMonth()
             //         ? date_utils.format(date, 'MMMM', this.options.language)
@@ -564,9 +572,6 @@ export default class Gantt {
             //         : '',
         };
 
-        const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate()
-        const current_day = date.getDate()
-        const days_span = Math.min(dates_span, days_per_month - current_day)
         const x_pos = {
             // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
             // 'Quarter Day_upper': 0,
@@ -574,7 +579,7 @@ export default class Gantt {
             // 'Half Day_upper': 0,
             Day_lower: this.options.column_width / 2,
             // Day_upper: (this.options.column_width * 30) / 2,
-            Day_upper: (this.options.column_width * days_span) / 2,
+            Day_upper: month_span / 2,
             // Week_lower: 0,
             // Week_upper: (this.options.column_width * 4) / 2,
             // Month_lower: this.options.column_width / 2,
