@@ -513,12 +513,9 @@ export default class Gantt {
         const current_day = date.getDate()
         const days_span = Math.min(dates_span, days_per_month - current_day)
         const lower_text_font_width = 18
-        const upper_text_font_width = 60
         const month_span = (this.options.column_width * days_span)
         const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
-        const upper_column_threshold = Math.ceil(upper_text_font_width / month_span)
         const correct_lower_text_mod = i % lower_column_threshold === 0
-        const correct_upper_text_mod = i % upper_column_threshold === 0
         const date_text = {
             // 'Quarter Day_lower': date_utils.format(
             //     date,
@@ -535,7 +532,7 @@ export default class Gantt {
                     ? date_utils.format(date, 'D', this.options.language)
                     : '',
             Day_upper:
-                (correct_upper_text_mod && date.getMonth() !== last_date.getMonth() || i === 0)
+                (date.getMonth() !== last_date.getMonth() || i === 0)
                     ? date_utils.format(date, 'MMMM', this.options.language)
                     : '',
             // Week_lower:
