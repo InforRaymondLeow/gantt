@@ -214,14 +214,15 @@ export default class Gantt {
     }
 
     setup_gantt_dates() {
-        this.gantt_start = this.gantt_end = null;
+        this.gantt_start = this.options.start 
+        this.gantt_end = this.options.end
 
         for (let task of this.tasks) {
             // set global start and end date
-            if (!this.gantt_start || task._start < this.gantt_start) {
+            if (!this.options.start && (!this.gantt_start || task._start < this.gantt_start)) {
                 this.gantt_start = task._start;
             }
-            if (!this.gantt_end || task._end > this.gantt_end) {
+            if (!this.options.end && (!this.gantt_end || task._end > this.gantt_end)) {
                 this.gantt_end = task._end;
             }
         }
