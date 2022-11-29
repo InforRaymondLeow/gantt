@@ -465,6 +465,29 @@ export default class Gantt {
                 append_to: this.layers.date,
             });
 
+            if (date.is_weekend) {
+                const x =
+                (date_utils.diff(date, this.gantt_start, 'hour') /
+                    this.options.step) *
+                this.options.column_width;
+                const y = this.options.header_height;
+
+                const width = this.options.column_width;
+                const height =
+                    (this.options.bar_height + this.options.padding) *
+                        this.tasks.length +
+                    this.options.padding / 2;
+
+                createSVG('rect', {
+                    x,
+                    y,
+                    width,
+                    height,
+                    class: 'weekend-highlight',
+                    append_to: this.layers.grid,
+                });
+            }
+
             if (date.upper_text) {
                 const $upper_text = createSVG('text', {
                     x: date.upper_x,
@@ -586,6 +609,9 @@ export default class Gantt {
             // Year_upper: (this.options.column_width * 30) / 2,
         };
 
+        // Sunday = 0, Saturday = 6
+        const is_weekend = [0, 6].includes(date.getDate()) 
+
         return {
             upper_text: date_text[`${this.options.view_mode}_upper`],
             lower_text: date_text[`${this.options.view_mode}_lower`],
@@ -593,6 +619,7 @@ export default class Gantt {
             upper_y: base_pos.upper_y,
             lower_x: base_pos.x + x_pos[`${this.options.view_mode}_lower`],
             lower_y: base_pos.lower_y,
+            is_weekend: is_weekend
         };
     }
 
