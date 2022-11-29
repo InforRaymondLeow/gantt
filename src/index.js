@@ -610,7 +610,7 @@ export default class Gantt {
         };
 
         // Sunday = 0, Saturday = 6
-        const is_weekend = [0, 6].includes(date.getDate()) 
+        const is_weekend = [0, 6].includes(date.getDay()) 
 
         return {
             upper_text: date_text[`${this.options.view_mode}_upper`],
