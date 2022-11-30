@@ -471,7 +471,7 @@ export default class Gantt {
                     this.options.step) *
                 this.options.column_width;
                 const y = this.options.header_height + 
-                    this.options.padding;
+                    (this.options.padding /  2);
 
                 const width = this.options.column_width;
                 const height =
