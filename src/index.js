@@ -188,28 +188,29 @@ export default class Gantt {
 
     update_view_scale(view_mode) {
         this.options.view_mode = view_mode;
+        this.options.column_width = this.options.column_widths[view_mode]
 
         if (view_mode === VIEW_MODE.DAY) {
             this.options.step = 24;
             // this.options.column_width = 38;
-        } else if (view_mode === VIEW_MODE.HALF_DAY) {
-            this.options.step = 24 / 2;
+        // } else if (view_mode === VIEW_MODE.HALF_DAY) {
+            // this.options.step = 24 / 2;
             // this.options.column_width = 38;
-        } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
-            this.options.step = 24 / 4;
+        // } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
+            // this.options.step = 24 / 4;
             // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.HOUR) {
             this.options.step = 24;
         } else if (view_mode === VIEW_MODE.MINUTE) {
             this.options.step = 5;
-        } else if (view_mode === VIEW_MODE.WEEK) {
-            this.options.step = 24 * 7;
+        // } else if (view_mode === VIEW_MODE.WEEK) {
+            // this.options.step = 24 * 7;
             // this.options.column_width = 140;
-        } else if (view_mode === VIEW_MODE.MONTH) {
-            this.options.step = 24 * 30;
+        // } else if (view_mode === VIEW_MODE.MONTH) {
+            // this.options.step = 24 * 30;
             // this.options.column_width = 120;
-        } else if (view_mode === VIEW_MODE.YEAR) {
-            this.options.step = 24 * 365;
+        // } else if (view_mode === VIEW_MODE.YEAR) {
+            // this.options.step = 24 * 365;
             // this.options.column_width = 120;
         }
     }
@@ -287,6 +288,8 @@ export default class Gantt {
                         this.options.step,
                         'minute'
                     );
+                } else {
+                    break;
                 }
             }
             this.dates.push(cur_date);
