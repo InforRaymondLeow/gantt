@@ -201,7 +201,7 @@ export default class Gantt {
         } else if (view_mode === VIEW_MODE.HOUR) {
             this.options.step = 1;
         } else if (view_mode === VIEW_MODE.MINUTE) {
-            this.options.step = 1 / 12;
+            this.options.step = 5;
         } else if (view_mode === VIEW_MODE.WEEK) {
             this.options.step = 24 * 7;
             // this.options.column_width = 140;
@@ -222,12 +222,12 @@ export default class Gantt {
     setup_gantt_dates() {
         
         if (this.view_is([VIEW_MODE.MINUTE])) {
-            this.gantt_start = date_utils.add(new Date(), -10, 'minute')
-            this.gantt_end = date_utils.add(new Date(), 50, 'minute')
+            this.gantt_start = date_utils.add(this.options.start, -10, 'minute')
+            this.gantt_end = date_utils.add(this.options.start, 50, 'minute')
         } else 
         if (this.view_is([VIEW_MODE.HOUR])) {
-            this.gantt_start = date_utils.add(new Date(), -2, 'hour')
-            this.gantt_end = date_utils.add(new Date(), 22, 'hour')
+            this.gantt_start = date_utils.add(this.options.start, -2, 'hour')
+            this.gantt_end = date_utils.add(this.options.start, 22, 'hour')
         } else {
             this.gantt_start = this.options.start
             this.gantt_end = this.options.end
@@ -273,11 +273,17 @@ export default class Gantt {
                     cur_date = date_utils.add(cur_date, 1, 'year');
                 } else if (this.view_is(VIEW_MODE.MONTH)) {
                     cur_date = date_utils.add(cur_date, 1, 'month');
-                } else {
+                } else if (this.view_is([VIEW_MODE.DAY, VIEW_MODE.HOUR])){
                     cur_date = date_utils.add(
                         cur_date,
                         this.options.step,
                         'hour'
+                    );
+                } else if (this.view_is(VIEW_MODE.MINUTE)){
+                    cur_date = date_utils.add(
+                        cur_date,
+                        this.options.step,
+                        'minute'
                     );
                 }
             }
