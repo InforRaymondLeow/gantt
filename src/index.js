@@ -7,6 +7,8 @@ import { $, createSVG } from './svg_utils';
 import './gantt.scss';
 
 const VIEW_MODE = {
+    MINUTE: '5 Minute',
+    HOUR: 'Hour',
     QUARTER_DAY: 'Quarter Day',
     HALF_DAY: 'Half Day',
     DAY: 'Day',
@@ -196,6 +198,10 @@ export default class Gantt {
         } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
             this.options.step = 24 / 4;
             // this.options.column_width = 38;
+        } else if (view_mode === VIEW_MODE.HOUR) {
+            this.options.step = 1;
+        } else if (view_mode === VIEW_MODE.MINUTE) {
+            this.options.step = 1 / 12;
         } else if (view_mode === VIEW_MODE.WEEK) {
             this.options.step = 24 * 7;
             // this.options.column_width = 140;
@@ -465,7 +471,7 @@ export default class Gantt {
                 append_to: this.layers.date,
             });
 
-            if (date_info.is_weekend) {
+            if (date_info.is_weekend && this.view_is(VIEW_MODE.DAY)) {
                 const x =
                 (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
                     this.options.step) *
