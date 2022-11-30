@@ -231,6 +231,8 @@ export default class Gantt {
         } else {
             this.gantt_start = this.options.start
             this.gantt_end = this.options.end
+            this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
+            this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
         }
 
         for (let task of this.tasks) {
@@ -242,9 +244,6 @@ export default class Gantt {
                 this.gantt_end = task._end;
             }
         }
-
-        this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
-        this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
 
         // add date padding on both sides
         // if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
