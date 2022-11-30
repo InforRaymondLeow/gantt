@@ -470,7 +470,8 @@ export default class Gantt {
                 (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
                     this.options.step) *
                 this.options.column_width;
-                const y = this.options.header_height;
+                const y = this.options.header_height + 
+                    this.options.padding;
 
                 const width = this.options.column_width;
                 const height =
