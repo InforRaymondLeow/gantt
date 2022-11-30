@@ -456,18 +456,18 @@ export default class Gantt {
         if (this.dates.length === 0) {
             return
         }
-        for (let date of this.get_dates_to_draw()) {
+        for (let date_info of this.get_dates_to_draw()) {
             createSVG('text', {
-                x: date.lower_x,
-                y: date.lower_y,
-                innerHTML: date.lower_text,
+                x: date_info.lower_x,
+                y: date_info.lower_y,
+                innerHTML: date_info.lower_text,
                 class: 'lower-text',
                 append_to: this.layers.date,
             });
 
-            if (date.is_weekend) {
+            if (date_info.is_weekend) {
                 const x =
-                (date_utils.diff(date, this.gantt_start, 'hour') /
+                (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
                     this.options.step) *
                 this.options.column_width;
                 const y = this.options.header_height;
@@ -475,8 +475,8 @@ export default class Gantt {
                 const width = this.options.column_width;
                 const height =
                     (this.options.bar_height + this.options.padding) *
-                        this.tasks.length +
-                    this.options.padding / 2;
+                        this.tasks.length //+
+                    // this.options.padding / 2;
 
                 createSVG('rect', {
                     x,
@@ -488,11 +488,11 @@ export default class Gantt {
                 });
             }
 
-            if (date.upper_text) {
+            if (date_info.upper_text) {
                 const $upper_text = createSVG('text', {
-                    x: date.upper_x,
-                    y: date.upper_y,
-                    innerHTML: date.upper_text,
+                    x: date_info.upper_x,
+                    y: date_info.upper_y,
+                    innerHTML: date_info.upper_text,
                     class: 'upper-text',
                     append_to: this.layers.date,
                 });
@@ -619,7 +619,8 @@ export default class Gantt {
             upper_y: base_pos.upper_y,
             lower_x: base_pos.x + x_pos[`${this.options.view_mode}_lower`],
             lower_y: base_pos.lower_y,
-            is_weekend: is_weekend
+            is_weekend: is_weekend,
+            date: date
         };
     }
 
