@@ -199,7 +199,7 @@ export default class Gantt {
             this.options.step = 24 / 4;
             // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.HOUR) {
-            this.options.step = 1;
+            this.options.step = 24;
         } else if (view_mode === VIEW_MODE.MINUTE) {
             this.options.step = 5;
         } else if (view_mode === VIEW_MODE.WEEK) {
@@ -222,12 +222,14 @@ export default class Gantt {
     setup_gantt_dates() {
         
         if (this.view_is([VIEW_MODE.MINUTE])) {
-            this.gantt_start = date_utils.add(this.options.start, -10, 'minute')
-            this.gantt_end = date_utils.add(this.options.start, 50, 'minute')
+            // this.gantt_start = date_utils.add(this.options.start, -10, 'minute')
+            this.gantt_start = this.options.start
+            this.gantt_end = date_utils.add(this.options.start, 1, 'day')
         } else 
         if (this.view_is([VIEW_MODE.HOUR])) {
-            this.gantt_start = date_utils.add(this.options.start, -2, 'hour')
-            this.gantt_end = date_utils.add(this.options.start, 22, 'hour')
+            // this.gantt_start = date_utils.add(this.options.start, -2, 'hour')
+            this.gantt_start = this.options.start
+            this.gantt_end = date_utils.add(this.options.start, 1, 'day')
         } else {
             this.gantt_start = this.options.start
             this.gantt_end = this.options.end
