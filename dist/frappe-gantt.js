@@ -1,6 +1,235 @@
 var Gantt = (function () {
     'use strict';
 
+    function $(expr, con) {
+        return typeof expr === 'string'
+            ? (con || document).querySelector(expr)
+            : expr || null;
+    }
+
+    function createSVG(tag, attrs) {
+        const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (let attr in attrs) {
+            if (attr === 'append_to') {
+                const parent = attrs.append_to;
+                parent.appendChild(elem);
+            } else if (attr === 'innerHTML') {
+                elem.innerHTML = attrs.innerHTML;
+            } else {
+                elem.setAttribute(attr, attrs[attr]);
+            }
+        }
+        return elem;
+    }
+
+    function animateSVG(svgElement, attr, from, to) {
+        const animatedSvgElement = getAnimationElement(svgElement, attr, from, to);
+
+        if (animatedSvgElement === svgElement) {
+            // triggered 2nd time programmatically
+            // trigger artificial click event
+            const event = document.createEvent('HTMLEvents');
+            event.initEvent('click', true, true);
+            event.eventName = 'click';
+            animatedSvgElement.dispatchEvent(event);
+        }
+    }
+
+    function getAnimationElement(
+        svgElement,
+        attr,
+        from,
+        to,
+        dur = '0.4s',
+        begin = '0.1s'
+    ) {
+        const animEl = svgElement.querySelector('animate');
+        if (animEl) {
+            $.attr(animEl, {
+                attributeName: attr,
+                from,
+                to,
+                dur,
+                begin: 'click + ' + begin, // artificial click
+            });
+            return svgElement;
+        }
+
+        const animateElement = createSVG('animate', {
+            attributeName: attr,
+            from,
+            to,
+            dur,
+            begin,
+            calcMode: 'spline',
+            values: from + ';' + to,
+            keyTimes: '0; 1',
+            keySplines: cubic_bezier('ease-out'),
+        });
+        svgElement.appendChild(animateElement);
+
+        return svgElement;
+    }
+
+    function cubic_bezier(name) {
+        return {
+            ease: '.25 .1 .25 1',
+            linear: '0 0 1 1',
+            'ease-in': '.42 0 1 1',
+            'ease-out': '0 0 .58 1',
+            'ease-in-out': '.42 0 .58 1',
+        }[name];
+    }
+
+    $.on = (element, event, selector, callback) => {
+        if (!callback) {
+            callback = selector;
+            $.bind(element, event, callback);
+        } else {
+            $.delegate(element, event, selector, callback);
+        }
+    };
+
+    $.off = (element, event, handler) => {
+        element.removeEventListener(event, handler);
+    };
+
+    $.bind = (element, event, callback) => {
+        event.split(/\s+/).forEach(function (event) {
+            element.addEventListener(event, callback);
+        });
+    };
+
+    $.delegate = (element, event, selector, callback) => {
+        element.addEventListener(event, function (e) {
+            const delegatedTarget = e.target.closest(selector);
+            if (delegatedTarget) {
+                e.delegatedTarget = delegatedTarget;
+                callback.call(this, e, delegatedTarget);
+            }
+        });
+    };
+
+    $.closest = (selector, element) => {
+        if (!element) return null;
+
+        if (element.matches(selector)) {
+            return element;
+        }
+
+        return $.closest(selector, element.parentNode);
+    };
+
+    $.attr = (element, attr, value) => {
+        if (!value && typeof attr === 'string') {
+            return element.getAttribute(attr);
+        }
+
+        if (typeof attr === 'object') {
+            for (let key in attr) {
+                $.attr(element, key, attr[key]);
+            }
+            return;
+        }
+
+        element.setAttribute(attr, value);
+    };
+
+    class Arrow {
+        constructor(gantt, from_task, to_task) {
+            this.gantt = gantt;
+            this.from_task = from_task;
+            this.to_task = to_task;
+
+            this.calculate_path();
+            this.draw();
+        }
+
+        calculate_path() {
+            let start_x =
+                this.from_task.$bar.getX() + this.from_task.$bar.getWidth() / 2;
+
+            const condition = () =>
+                this.to_task.$bar.getX() < start_x + this.gantt.options.padding &&
+                start_x > this.from_task.$bar.getX() + this.gantt.options.padding;
+
+            while (condition()) {
+                start_x -= 10;
+            }
+
+            const start_y =
+                this.gantt.options.header_height +
+                this.gantt.options.bar_height +
+                (this.gantt.options.padding + this.gantt.options.bar_height) *
+                    this.from_task.task._index +
+                this.gantt.options.padding;
+
+            const end_x = this.to_task.$bar.getX() - this.gantt.options.padding / 2;
+            const end_y =
+                this.gantt.options.header_height +
+                this.gantt.options.bar_height / 2 +
+                (this.gantt.options.padding + this.gantt.options.bar_height) *
+                    this.to_task.task._index +
+                this.gantt.options.padding;
+
+            const from_is_below_to =
+                this.from_task.task._index > this.to_task.task._index;
+            const curve = this.gantt.options.arrow_curve;
+            const clockwise = from_is_below_to ? 1 : 0;
+            const curve_y = from_is_below_to ? -curve : curve;
+            const offset = from_is_below_to
+                ? end_y + this.gantt.options.arrow_curve
+                : end_y - this.gantt.options.arrow_curve;
+
+            this.path = `
+            M ${start_x} ${start_y}
+            V ${offset}
+            a ${curve} ${curve} 0 0 ${clockwise} ${curve} ${curve_y}
+            L ${end_x} ${end_y}
+            m -5 -5
+            l 5 5
+            l -5 5`;
+
+            if (
+                this.to_task.$bar.getX() <
+                this.from_task.$bar.getX() + this.gantt.options.padding
+            ) {
+                const down_1 = this.gantt.options.padding / 2 - curve;
+                const down_2 =
+                    this.to_task.$bar.getY() +
+                    this.to_task.$bar.getHeight() / 2 -
+                    curve_y;
+                const left = this.to_task.$bar.getX() - this.gantt.options.padding;
+
+                this.path = `
+                M ${start_x} ${start_y}
+                v ${down_1}
+                a ${curve} ${curve} 0 0 1 -${curve} ${curve}
+                H ${left}
+                a ${curve} ${curve} 0 0 ${clockwise} -${curve} ${curve_y}
+                V ${down_2}
+                a ${curve} ${curve} 0 0 ${clockwise} ${curve} ${curve_y}
+                L ${end_x} ${end_y}
+                m -5 -5
+                l 5 5
+                l -5 5`;
+            }
+        }
+
+        draw() {
+            this.element = createSVG('path', {
+                d: this.path,
+                'data-from': this.from_task.task.id,
+                'data-to': this.to_task.task.id,
+            });
+        }
+
+        update() {
+            this.calculate_path();
+            this.element.setAttribute('d', this.path);
+        }
+    }
+
     const YEAR = 'year';
     const MONTH = 'month';
     const DAY = 'day';
@@ -65,6 +294,20 @@ var Gantt = (function () {
             'Octubre',
             'Noviembre',
             'Diciembre',
+        ],
+        it: [
+            "Gennaio",
+            "Febbraio",
+            "Marzo",
+            "Aprile",
+            "Maggio",
+            "Giugno",
+            "Luglio",
+            "Agosto",
+            "Settembre",
+            "Ottobre",
+            "Novembre", 
+            "Dicembre"
         ],
         ru: [
             'Январь',
@@ -355,153 +598,19 @@ var Gantt = (function () {
         }
     }
 
-    function $(expr, con) {
-        return typeof expr === 'string'
-            ? (con || document).querySelector(expr)
-            : expr || null;
-    }
-
-    function createSVG(tag, attrs) {
-        const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
-        for (let attr in attrs) {
-            if (attr === 'append_to') {
-                const parent = attrs.append_to;
-                parent.appendChild(elem);
-            } else if (attr === 'innerHTML') {
-                elem.innerHTML = attrs.innerHTML;
-            } else {
-                elem.setAttribute(attr, attrs[attr]);
-            }
-        }
-        return elem;
-    }
-
-    function animateSVG(svgElement, attr, from, to) {
-        const animatedSvgElement = getAnimationElement(svgElement, attr, from, to);
-
-        if (animatedSvgElement === svgElement) {
-            // triggered 2nd time programmatically
-            // trigger artificial click event
-            const event = document.createEvent('HTMLEvents');
-            event.initEvent('click', true, true);
-            event.eventName = 'click';
-            animatedSvgElement.dispatchEvent(event);
-        }
-    }
-
-    function getAnimationElement(
-        svgElement,
-        attr,
-        from,
-        to,
-        dur = '0.4s',
-        begin = '0.1s'
-    ) {
-        const animEl = svgElement.querySelector('animate');
-        if (animEl) {
-            $.attr(animEl, {
-                attributeName: attr,
-                from,
-                to,
-                dur,
-                begin: 'click + ' + begin, // artificial click
-            });
-            return svgElement;
-        }
-
-        const animateElement = createSVG('animate', {
-            attributeName: attr,
-            from,
-            to,
-            dur,
-            begin,
-            calcMode: 'spline',
-            values: from + ';' + to,
-            keyTimes: '0; 1',
-            keySplines: cubic_bezier('ease-out'),
-        });
-        svgElement.appendChild(animateElement);
-
-        return svgElement;
-    }
-
-    function cubic_bezier(name) {
-        return {
-            ease: '.25 .1 .25 1',
-            linear: '0 0 1 1',
-            'ease-in': '.42 0 1 1',
-            'ease-out': '0 0 .58 1',
-            'ease-in-out': '.42 0 .58 1',
-        }[name];
-    }
-
-    $.on = (element, event, selector, callback) => {
-        if (!callback) {
-            callback = selector;
-            $.bind(element, event, callback);
-        } else {
-            $.delegate(element, event, selector, callback);
-        }
-    };
-
-    $.off = (element, event, handler) => {
-        element.removeEventListener(event, handler);
-    };
-
-    $.bind = (element, event, callback) => {
-        event.split(/\s+/).forEach(function (event) {
-            element.addEventListener(event, callback);
-        });
-    };
-
-    $.delegate = (element, event, selector, callback) => {
-        element.addEventListener(event, function (e) {
-            const delegatedTarget = e.target.closest(selector);
-            if (delegatedTarget) {
-                e.delegatedTarget = delegatedTarget;
-                callback.call(this, e, delegatedTarget);
-            }
-        });
-    };
-
-    $.closest = (selector, element) => {
-        if (!element) return null;
-
-        if (element.matches(selector)) {
-            return element;
-        }
-
-        return $.closest(selector, element.parentNode);
-    };
-
-    $.attr = (element, attr, value) => {
-        if (!value && typeof attr === 'string') {
-            return element.getAttribute(attr);
-        }
-
-        if (typeof attr === 'object') {
-            for (let key in attr) {
-                $.attr(element, key, attr[key]);
-            }
-            return;
-        }
-
-        element.setAttribute(attr, value);
-    };
-
     class Bar {
-        constructor(gantt, task, callback) {
-            this.set_defaults(gantt, task, callback);
+        constructor(gantt, task, context) {
+            this.set_defaults(gantt, task, context);
             this.prepare();
             this.draw();
             this.bind();
         }
 
-        set_defaults(gantt, task, callback) {
+        set_defaults(gantt, task, context) {
             this.action_completed = false;
             this.gantt = gantt;
             this.task = task;
-            this.callback = callback
+            this.context = context;
         }
 
         prepare() {
@@ -585,9 +694,9 @@ var Gantt = (function () {
             if (this.invalid) return;
             this.$bar_progress = createSVG('rect', {
                 x: this.x,
-                y: this.y,
+                y: this.y + 15,
                 width: this.progress_width,
-                height: this.height,
+                height: 5,
                 rx: this.corner_radius,
                 ry: this.corner_radius,
                 class: 'bar-progress',
@@ -705,6 +814,10 @@ var Gantt = (function () {
                 title: this.task.name,
                 subtitle: subtitle,
                 task: this.task,
+                grid_size: {
+                    height: this.context.grid_height,
+                    width: this.context.grid_width
+                }
             });
         }
 
@@ -754,7 +867,7 @@ var Gantt = (function () {
                 this.task,
                 new_start_date,
                 date_utils.add(new_end_date, -1, 'second'),
-                this.callback
+                this.context
             ]);
         }
 
@@ -899,105 +1012,11 @@ var Gantt = (function () {
         }
     }
 
-    class Arrow {
-        constructor(gantt, from_task, to_task) {
-            this.gantt = gantt;
-            this.from_task = from_task;
-            this.to_task = to_task;
-
-            this.calculate_path();
-            this.draw();
-        }
-
-        calculate_path() {
-            let start_x =
-                this.from_task.$bar.getX() + this.from_task.$bar.getWidth() / 2;
-
-            const condition = () =>
-                this.to_task.$bar.getX() < start_x + this.gantt.options.padding &&
-                start_x > this.from_task.$bar.getX() + this.gantt.options.padding;
-
-            while (condition()) {
-                start_x -= 10;
-            }
-
-            const start_y =
-                this.gantt.options.header_height +
-                this.gantt.options.bar_height +
-                (this.gantt.options.padding + this.gantt.options.bar_height) *
-                    this.from_task.task._index +
-                this.gantt.options.padding;
-
-            const end_x = this.to_task.$bar.getX() - this.gantt.options.padding / 2;
-            const end_y =
-                this.gantt.options.header_height +
-                this.gantt.options.bar_height / 2 +
-                (this.gantt.options.padding + this.gantt.options.bar_height) *
-                    this.to_task.task._index +
-                this.gantt.options.padding;
-
-            const from_is_below_to =
-                this.from_task.task._index > this.to_task.task._index;
-            const curve = this.gantt.options.arrow_curve;
-            const clockwise = from_is_below_to ? 1 : 0;
-            const curve_y = from_is_below_to ? -curve : curve;
-            const offset = from_is_below_to
-                ? end_y + this.gantt.options.arrow_curve
-                : end_y - this.gantt.options.arrow_curve;
-
-            this.path = `
-            M ${start_x} ${start_y}
-            V ${offset}
-            a ${curve} ${curve} 0 0 ${clockwise} ${curve} ${curve_y}
-            L ${end_x} ${end_y}
-            m -5 -5
-            l 5 5
-            l -5 5`;
-
-            if (
-                this.to_task.$bar.getX() <
-                this.from_task.$bar.getX() + this.gantt.options.padding
-            ) {
-                const down_1 = this.gantt.options.padding / 2 - curve;
-                const down_2 =
-                    this.to_task.$bar.getY() +
-                    this.to_task.$bar.getHeight() / 2 -
-                    curve_y;
-                const left = this.to_task.$bar.getX() - this.gantt.options.padding;
-
-                this.path = `
-                M ${start_x} ${start_y}
-                v ${down_1}
-                a ${curve} ${curve} 0 0 1 -${curve} ${curve}
-                H ${left}
-                a ${curve} ${curve} 0 0 ${clockwise} -${curve} ${curve_y}
-                V ${down_2}
-                a ${curve} ${curve} 0 0 ${clockwise} ${curve} ${curve_y}
-                L ${end_x} ${end_y}
-                m -5 -5
-                l 5 5
-                l -5 5`;
-            }
-        }
-
-        draw() {
-            this.element = createSVG('path', {
-                d: this.path,
-                'data-from': this.from_task.task.id,
-                'data-to': this.to_task.task.id,
-            });
-        }
-
-        update() {
-            this.calculate_path();
-            this.element.setAttribute('d', this.path);
-        }
-    }
-
     class Popup {
-        constructor(parent, custom_html) {
+        constructor(parent, custom_html, grid_size) {
             this.parent = parent;
             this.custom_html = custom_html;
+            this.grid_size = grid_size;
             this.make();
         }
 
@@ -1019,9 +1038,8 @@ var Gantt = (function () {
             if (!options.target_element) {
                 throw new Error('target_element is required to show popup');
             }
-            if (!options.position) {
-                options.position = 'left';
-            }
+
+            
             const target_element = options.target_element;
 
             if (this.custom_html) {
@@ -1044,7 +1062,24 @@ var Gantt = (function () {
                 position_meta = options.target_element.getBBox();
             }
 
+            const margin = 10;
+            const right_side_space = (this.grid_size.width - position_meta.x - 
+                position_meta.width - this.parent.clientWidth);
+            if (margin < right_side_space) {
+                options.position = 'right';
+            } else {
+                options.position = 'left';
+            }
+
             if (options.position === 'left') {
+                this.parent.style.left = 
+                    (position_meta.x - this.parent.clientWidth - 10) + 'px';
+                this.parent.style.top = (position_meta.y - this.parent.clientHeight + position_meta.height) + 'px';
+
+                this.pointer.style.transform = 'rotateZ(270deg)';
+                this.pointer.style.left = (this.parent.clientWidth + 7) + 'px';
+                this.pointer.style.top = (this.parent.clientHeight - 10 - 2) + 'px';
+            } else {
                 this.parent.style.left =
                     position_meta.x + (position_meta.width + 10) + 'px';
                 this.parent.style.top = position_meta.y + 'px';
@@ -1065,6 +1100,8 @@ var Gantt = (function () {
     }
 
     const VIEW_MODE = {
+        MINUTE: '5 Minute',
+        HOUR: 'Hour',
         QUARTER_DAY: 'Quarter Day',
         HALF_DAY: 'Half Day',
         DAY: 'Day',
@@ -1074,11 +1111,11 @@ var Gantt = (function () {
     };
 
     class Gantt {
-        constructor(wrapper, tasks, options, callback) {
+        constructor(wrapper, tasks, options, context) {
             this.setup_wrapper(wrapper);
             this.setup_options(options);
             this.setup_tasks(tasks);
-            this.setup_callback(callback)
+            this.setup_context(context);
             // initialize with default view mode
             this.change_view_mode();
             this.bind_events();
@@ -1215,8 +1252,8 @@ var Gantt = (function () {
             this.setup_dependencies();
         }
 
-        setup_callback() {
-            this.callback = this.callback
+        setup_context(context) {
+            this.context = context;
         }
 
         setup_dependencies() {
@@ -1254,6 +1291,10 @@ var Gantt = (function () {
             } else if (view_mode === VIEW_MODE.QUARTER_DAY) {
                 this.options.step = 24 / 4;
                 // this.options.column_width = 38;
+            } else if (view_mode === VIEW_MODE.HOUR) {
+                this.options.step = 1;
+            } else if (view_mode === VIEW_MODE.MINUTE) {
+                this.options.step = 1 / 12;
             } else if (view_mode === VIEW_MODE.WEEK) {
                 this.options.step = 24 * 7;
                 // this.options.column_width = 140;
@@ -1272,14 +1313,25 @@ var Gantt = (function () {
         }
 
         setup_gantt_dates() {
-            this.gantt_start = this.gantt_end = null;
+            
+            if (this.view_is([VIEW_MODE.MINUTE])) {
+                this.gantt_start = date_utils.add(new Date(), -10, 'minute');
+                this.gantt_end = date_utils.add(new Date(), 50, 'minute');
+            } else 
+            if (this.view_is([VIEW_MODE.HOUR])) {
+                this.gantt_start = date_utils.add(new Date(), -2, 'hour');
+                this.gantt_end = date_utils.add(new Date(), 22, 'hour');
+            } else {
+                this.gantt_start = this.options.start;
+                this.gantt_end = this.options.end;
+            }
 
             for (let task of this.tasks) {
                 // set global start and end date
-                if (!this.gantt_start || task._start < this.gantt_start) {
+                if (!this.options.start && (!this.gantt_start || task._start < this.gantt_start)) {
                     this.gantt_start = task._start;
                 }
-                if (!this.gantt_end || task._end > this.gantt_end) {
+                if (!this.options.end && (!this.gantt_end || task._end > this.gantt_end)) {
                     this.gantt_end = task._end;
                 }
             }
@@ -1288,19 +1340,19 @@ var Gantt = (function () {
             this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
 
             // add date padding on both sides
-            if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
-                this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
-                this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
-            } else if (this.view_is(VIEW_MODE.MONTH)) {
-                this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
-                this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
-            } else if (this.view_is(VIEW_MODE.YEAR)) {
-                this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
-                this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
-            } else {
-                this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
-                this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
-            }
+            // if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
+            //     this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
+            //     this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
+            // } else if (this.view_is(VIEW_MODE.MONTH)) {
+            //     this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
+            //     this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
+            // } else if (this.view_is(VIEW_MODE.YEAR)) {
+            //     this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
+            //     this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
+            // } else {
+            //     this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
+            //     this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
+            // }
         }
 
         setup_date_values() {
@@ -1372,6 +1424,9 @@ var Gantt = (function () {
                 (this.options.bar_height + this.options.padding) *
                     this.tasks.length;
 
+            this.context.grid_width = grid_width;
+            this.context.grid_height = grid_height;
+            
             createSVG('rect', {
                 x: 0,
                 y: 0,
@@ -1382,7 +1437,8 @@ var Gantt = (function () {
             });
 
             $.attr(this.$svg, {
-                height: grid_height + this.options.padding + 100,
+                // height: grid_height + this.options.padding + 100,
+                height: grid_height - 7, // Warning! Hard-coded
                 width: '100%',
             });
         }
@@ -1506,20 +1562,47 @@ var Gantt = (function () {
         }
 
         make_dates() {
-            for (let date of this.get_dates_to_draw()) {
+            if (this.dates.length === 0) {
+                return
+            }
+            for (let date_info of this.get_dates_to_draw()) {
                 createSVG('text', {
-                    x: date.lower_x,
-                    y: date.lower_y,
-                    innerHTML: date.lower_text,
+                    x: date_info.lower_x,
+                    y: date_info.lower_y,
+                    innerHTML: date_info.lower_text,
                     class: 'lower-text',
                     append_to: this.layers.date,
                 });
 
-                if (date.upper_text) {
+                if (date_info.is_weekend && this.view_is(VIEW_MODE.DAY)) {
+                    const x =
+                    (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
+                        this.options.step) *
+                    this.options.column_width;
+                    const y = this.options.header_height + 
+                        (this.options.padding /  2);
+
+                    const width = this.options.column_width;
+                    const height =
+                        (this.options.bar_height + this.options.padding) *
+                            this.tasks.length; //+
+                        // this.options.padding / 2;
+
+                    createSVG('rect', {
+                        x,
+                        y,
+                        width,
+                        height,
+                        class: 'weekend-highlight',
+                        append_to: this.layers.grid,
+                    });
+                }
+
+                if (date_info.upper_text) {
                     const $upper_text = createSVG('text', {
-                        x: date.upper_x,
-                        y: date.upper_y,
-                        innerHTML: date.upper_text,
+                        x: date_info.upper_x,
+                        y: date_info.upper_y,
+                        innerHTML: date_info.upper_text,
                         class: 'upper-text',
                         append_to: this.layers.date,
                     });
@@ -1536,44 +1619,91 @@ var Gantt = (function () {
 
         get_dates_to_draw() {
             let last_date = null;
+            const first_date = this.dates[0];
+            const final_date = this.dates[this.dates.length-1];
+            const time_diff = final_date.getTime() - first_date.getTime();
+            const dates_span = time_diff / (1000 * 3600 * 24);
             const dates = this.dates.map((date, i) => {
-                const d = this.get_date_info(date, last_date, i);
+                const d = this.get_date_info(date, last_date, i, dates_span);
                 last_date = date;
                 return d;
             });
             return dates;
         }
 
-        get_date_info(date, last_date, i) {
+        get_date_info(date, last_date, i, dates_span) {
             if (!last_date) {
-                last_date = date_utils.add(date, 1, 'year');
+                // last_date = date_utils.add(date, -1, 'year');
+                last_date = date_utils.add(date, -1, 'month');
+                last_date = date_utils.add(last_date, -1, 'day');
             }
+            const base_pos = {
+                x: i * this.options.column_width,
+                lower_y: this.options.header_height,
+                upper_y: this.options.header_height - 25,
+            };
+
+            const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate();
+            const current_day = date.getDate();
+            const days_span = Math.min(dates_span, days_per_month - current_day);
+            const lower_text_font_width = 18;
+            const month_span = (this.options.column_width * days_span);
+            const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width);
+            const correct_lower_text_mod = i % lower_column_threshold === 0;
             const date_text = {
-                'Quarter Day_lower': date_utils.format(
+                // 'Quarter Day_lower': date_utils.format(
+                //     date,
+                //     'HH',
+                //     this.options.language
+                // ),
+                // 'Half Day_lower': date_utils.format(
+                //     date,
+                //     'HH',
+                //     this.options.language
+                // ),
+                '5 Minute_lower': date_utils.format(
                     date,
                     'HH',
                     this.options.language
                 ),
-                'Half Day_lower': date_utils.format(
+                'Hour_lower': date_utils.format(
                     date,
                     'HH',
                     this.options.language
                 ),
                 Day_lower:
-                    date.getDate() !== last_date.getDate()
+                    (correct_lower_text_mod && (date.getDate() !== last_date.getDate() || i === 0))
                         ? date_utils.format(date, 'D', this.options.language)
                         : '',
-                Week_lower:
-                    date.getMonth() !== last_date.getMonth()
-                        ? date_utils.format(date, 'D MMM', this.options.language)
-                        : date_utils.format(date, 'D', this.options.language),
-                Month_lower: date_utils.format(date, 'MMMM', this.options.language),
-                Year_lower: date_utils.format(date, 'YYYY', this.options.language),
-                'Quarter Day_upper':
+                Day_upper:
+                    (date.getMonth() !== last_date.getMonth() || i === 0)
+                        ? date_utils.format(date, 'MMMM', this.options.language)
+                        : '',
+                // Week_lower:
+                //     date.getMonth() !== last_date.getMonth()
+                //         ? date_utils.format(date, 'D MMM', this.options.language)
+                //         : date_utils.format(date, 'D', this.options.language),
+                // Month_lower: date_utils.format(date, 'MMMM', this.options.language),
+                // Year_lower: date_utils.format(date, 'YYYY', this.options.language),
+                // 'Quarter Day_upper':
+                //     date.getDate() !== last_date.getDate()
+                //         ? date_utils.format(date, 'D MMM', this.options.language)
+                //         : '',
+                // 'Half Day_upper':
+                //     date.getDate() !== last_date.getDate()
+                //         ? date.getMonth() !== last_date.getMonth()
+                //             ? date_utils.format(
+                //                   date,
+                //                   'D MMM',
+                //                   this.options.language
+                //               )
+                //             : date_utils.format(date, 'D', this.options.language)
+                //         : '',
+                '5 Minute_upper':
                     date.getDate() !== last_date.getDate()
                         ? date_utils.format(date, 'D MMM', this.options.language)
                         : '',
-                'Half Day_upper':
+                'Hour_upper':
                     date.getDate() !== last_date.getDate()
                         ? date.getMonth() !== last_date.getMonth()
                             ? date_utils.format(
@@ -1583,44 +1713,42 @@ var Gantt = (function () {
                               )
                             : date_utils.format(date, 'D', this.options.language)
                         : '',
-                Day_upper:
-                    date.getMonth() !== last_date.getMonth()
-                        ? date_utils.format(date, 'MMMM', this.options.language)
-                        : '',
-                Week_upper:
-                    date.getMonth() !== last_date.getMonth()
-                        ? date_utils.format(date, 'MMMM', this.options.language)
-                        : '',
-                Month_upper:
-                    date.getFullYear() !== last_date.getFullYear()
-                        ? date_utils.format(date, 'YYYY', this.options.language)
-                        : '',
-                Year_upper:
-                    date.getFullYear() !== last_date.getFullYear()
-                        ? date_utils.format(date, 'YYYY', this.options.language)
-                        : '',
-            };
-
-            const base_pos = {
-                x: i * this.options.column_width,
-                lower_y: this.options.header_height,
-                upper_y: this.options.header_height - 25,
+                // Week_upper:
+                //     date.getMonth() !== last_date.getMonth()
+                //         ? date_utils.format(date, 'MMMM', this.options.language)
+                //         : '',
+                // Month_upper:
+                //     date.getFullYear() !== last_date.getFullYear()
+                //         ? date_utils.format(date, 'YYYY', this.options.language)
+                //         : '',
+                // Year_upper:
+                //     date.getFullYear() !== last_date.getFullYear()
+                //         ? date_utils.format(date, 'YYYY', this.options.language)
+                //         : '',
             };
 
             const x_pos = {
-                'Quarter Day_lower': (this.options.column_width * 4) / 2,
-                'Quarter Day_upper': 0,
-                'Half Day_lower': (this.options.column_width * 2) / 2,
-                'Half Day_upper': 0,
+                // 'Quarter Day_lower': (this.options.column_width * 4) / 2,
+                // 'Quarter Day_upper': 0,
+                // 'Half Day_lower': (this.options.column_width * 2) / 2,
+                // 'Half Day_upper': 0,
+                '5 Minute_lower': (this.options.column_width * 12 * 24) / 2,
+                '5 Minute_upper': 0,
+                Hour_lower: (this.options.column_width * 24) / 2,
+                Hour_upper: 0,
                 Day_lower: this.options.column_width / 2,
-                Day_upper: (this.options.column_width * 30) / 2,
-                Week_lower: 0,
-                Week_upper: (this.options.column_width * 4) / 2,
-                Month_lower: this.options.column_width / 2,
-                Month_upper: (this.options.column_width * 12) / 2,
-                Year_lower: this.options.column_width / 2,
-                Year_upper: (this.options.column_width * 30) / 2,
+                // Day_upper: (this.options.column_width * 30) / 2,
+                Day_upper: month_span / 2,
+                // Week_lower: 0,
+                // Week_upper: (this.options.column_width * 4) / 2,
+                // Month_lower: this.options.column_width / 2,
+                // Month_upper: (this.options.column_width * 12) / 2,
+                // Year_lower: this.options.column_width / 2,
+                // Year_upper: (this.options.column_width * 30) / 2,
             };
+
+            // Sunday = 0, Saturday = 6
+            const is_weekend = [0, 6].includes(date.getDay()); 
 
             return {
                 upper_text: date_text[`${this.options.view_mode}_upper`],
@@ -1629,12 +1757,14 @@ var Gantt = (function () {
                 upper_y: base_pos.upper_y,
                 lower_x: base_pos.x + x_pos[`${this.options.view_mode}_lower`],
                 lower_y: base_pos.lower_y,
+                is_weekend: is_weekend,
+                date: date
             };
         }
 
         make_bars() {
             this.bars = this.tasks.map((task) => {
-                const bar = new Bar(this, task, this.callback);
+                const bar = new Bar(this, task, this.context);
                 this.layers.bar.appendChild(bar.group);
                 return bar;
             });
@@ -1950,7 +2080,8 @@ var Gantt = (function () {
             if (!this.popup) {
                 this.popup = new Popup(
                     this.popup_wrapper,
-                    this.options.custom_popup_html
+                    this.options.custom_popup_html,
+                    options.grid_size
                 );
             }
             this.popup.show(options);

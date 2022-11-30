@@ -220,8 +220,18 @@ export default class Gantt {
     }
 
     setup_gantt_dates() {
-        this.gantt_start = this.options.start 
-        this.gantt_end = this.options.end
+        
+        if (this.view_is([VIEW_MODE.MINUTE])) {
+            this.gantt_start = date_utils.add(new Date(), -10, 'minute')
+            this.gantt_end = date_utils.add(new Date(), 50, 'minute')
+        } else 
+        if (this.view_is([VIEW_MODE.HOUR])) {
+            this.gantt_start = date_utils.add(new Date(), -2, 'hour')
+            this.gantt_end = date_utils.add(new Date(), 22, 'hour')
+        } else {
+            this.gantt_start = this.options.start
+            this.gantt_end = this.options.end
+        }
 
         for (let task of this.tasks) {
             // set global start and end date

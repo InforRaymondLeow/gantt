@@ -48,5 +48,8 @@
   },
   "eslintIgnore": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "frappe-gantt": "^0.6.1"
+  }
 }

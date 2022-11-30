@@ -1608,6 +1608,11 @@
     "combined-stream" "^1.0.5"
     "mime-types" "^2.1.12"
 
+"frappe-gantt@^0.6.1":
+  "integrity" "sha512-1cSU9vLbwypjzaxnCfnEE03Xr3HlAV2S8dRtjxw62o+amkx1A8bBIFd2jp84mcDdTCM77Ij4LzZBslAKZB8oMg=="
+  "resolved" "https://registry.npmjs.org/frappe-gantt/-/frappe-gantt-0.6.1.tgz"
+  "version" "0.6.1"
+
 "fs.realpath@^1.0.0":
   "integrity" "sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw=="
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
