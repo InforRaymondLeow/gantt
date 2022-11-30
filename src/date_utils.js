@@ -156,7 +156,8 @@ export default {
         }
         if (typeof date === 'string') {
             let date_parts, time_parts;
-            const parts = date.split(' ');
+            // const parts = date.split(' ');
+            const parts = date.split('T');
 
             date_parts = parts[0]
                 .split(date_separator)
