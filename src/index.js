@@ -225,12 +225,12 @@ export default class Gantt {
         if (this.view_is([VIEW_MODE.MINUTE])) {
             // this.gantt_start = date_utils.add(this.options.start, -10, 'minute')
             this.gantt_start = this.options.start
-            this.gantt_end = date_utils.add(this.options.start, 1, 'day')
+            this.gantt_end = date_utils.add(this.options.start, 2, 'hour')
         } else 
         if (this.view_is([VIEW_MODE.HOUR])) {
             // this.gantt_start = date_utils.add(this.options.start, -2, 'hour')
             this.gantt_start = this.options.start
-            this.gantt_end = date_utils.add(this.options.start, 1, 'day')
+            this.gantt_end = date_utils.add(this.options.start, 24, 'hour')
         } else {
             this.gantt_start = this.options.start
             this.gantt_end = this.options.end
@@ -951,7 +951,23 @@ export default class Gantt {
                 (rem < this.options.column_width / 60
                     ? 0
                     : this.options.column_width / 30);
-        } else {
+        } else if (this.view_is(VIEW_MODE.DAY)) {
+            rem = dx % this.options.column_width;
+            position =
+                odx -
+                rem +
+                (rem < this.options.column_width / 2
+                    ? 0
+                    : this.options.column_width);
+        } else if (this.view_is(VIEW_MODE.HOUR)) {
+            rem = dx % this.options.column_width;
+            position =
+                odx -
+                rem +
+                (rem < this.options.column_width / 2
+                    ? 0
+                    : this.options.column_width);
+        } else  {
             rem = dx % this.options.column_width;
             position =
                 odx -
