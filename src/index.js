@@ -292,7 +292,7 @@ export default class Gantt {
                     break;
                 }
             }
-            if (this.gantt_start == this.gantt_end || cur_date < this.gantt_end) {
+            if (this.gantt_start.valueOf() == this.gantt_end.valueOf() || cur_date < this.gantt_end) {
                 this.dates.push(cur_date);
             }
         }
