@@ -200,7 +200,7 @@ export default class Gantt {
             // this.options.step = 24 / 4;
             // this.options.column_width = 38;
         } else if (view_mode === VIEW_MODE.HOUR) {
-            this.options.step = 24;
+            this.options.step = 1;
         } else if (view_mode === VIEW_MODE.MINUTE) {
             this.options.step = 5;
         // } else if (view_mode === VIEW_MODE.WEEK) {
