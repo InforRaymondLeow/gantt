@@ -590,11 +590,10 @@ export default class Gantt {
             //     'HH',
             //     this.options.language
             // ),
-            '5 Minute_lower': date_utils.format(
-                date,
-                'mm',
-                this.options.language
-            ),
+            '5 Minute_lower': 
+                correct_lower_text_mod 
+                    ? date_utils.format(date, 'mm', this.options.language)
+                    : '',
             'Hour_lower': 
                 correct_lower_text_mod 
                     ? date_utils.format(date, 'HH', this.options.language) 
@@ -661,7 +660,7 @@ export default class Gantt {
             // 'Half Day_lower': (this.options.column_width * 2) / 2,
             // 'Half Day_upper': 0,
             '5 Minute_lower': this.options.column_width / 2,
-            '5 Minute_upper': 0,
+            '5 Minute_upper': (i === 0 ? 5 : 0),
             Hour_lower: this.options.column_width / 2,
             Hour_upper: (i === 0 ? 5 : 0),
             Day_lower: this.options.column_width / 2,
