@@ -493,7 +493,7 @@ export default class Gantt {
                 append_to: this.layers.date,
             });
 
-            if (date_info.grayed && this.view_is(VIEW_MODE.DAY)) {
+            if (date_info.grayed) {
                 const x =
                 (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
                     this.options.step) *
