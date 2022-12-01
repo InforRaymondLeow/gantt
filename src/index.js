@@ -539,9 +539,16 @@ export default class Gantt {
         const first_date = this.dates[0]
         const final_date = this.dates[this.dates.length-1]
         const time_diff = final_date.getTime() - first_date.getTime()
-        const dates_span = time_diff / (1000 * 3600 * 24)
+        let difference = 0
+        if (this.view_is(VIEW_MODE.DAY)) {
+            difference = time_diff / (1000 * 3600 * 24)
+        } else if (his.view_is(VIEW_MODE.DAY)) {
+            difference = time_diff / (1000 * 3600)
+        } else {
+            difference = time_diff / (1000 * 300)
+        }
         const dates = this.dates.map((date, i) => {
-            const d = this.get_date_info(date, last_date, i, dates_span);
+            const d = this.get_date_info(date, last_date, i, difference);
             last_date = date;
             return d;
         });
@@ -553,6 +560,8 @@ export default class Gantt {
             // last_date = date_utils.add(date, -1, 'year');
             last_date = date_utils.add(date, -1, 'month')
             last_date = date_utils.add(last_date, -1, 'day')
+            last_date = date_utils.add(last_date, -1, 'hour')
+            last_date = date_utils.add(last_date, -1, 'minute')
         }
         const base_pos = {
             x: i * this.options.column_width,
@@ -580,7 +589,7 @@ export default class Gantt {
             // ),
             '5 Minute_lower': date_utils.format(
                 date,
-                'HH',
+                'mm',
                 this.options.language
             ),
             'Hour_lower': date_utils.format(
@@ -649,9 +658,9 @@ export default class Gantt {
             // 'Quarter Day_upper': 0,
             // 'Half Day_lower': (this.options.column_width * 2) / 2,
             // 'Half Day_upper': 0,
-            '5 Minute_lower': (this.options.column_width * 12 * 24) / 2,
+            '5 Minute_lower': this.options.column_width / 2,
             '5 Minute_upper': 0,
-            Hour_lower: (this.options.column_width * 24) / 2,
+            Hour_lower: this.options.column_width / 2,
             Hour_upper: 0,
             Day_lower: this.options.column_width / 2,
             // Day_upper: (this.options.column_width * 30) / 2,
