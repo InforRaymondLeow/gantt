@@ -493,7 +493,7 @@ export default class Gantt {
                 append_to: this.layers.date,
             });
 
-            if (date_info.is_weekend && this.view_is(VIEW_MODE.DAY)) {
+            if (date_info.grayed && this.view_is(VIEW_MODE.DAY)) {
                 const x =
                 (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
                     this.options.step) *
@@ -512,7 +512,7 @@ export default class Gantt {
                     y,
                     width,
                     height,
-                    class: 'weekend-highlight',
+                    class: 'grayed-highlight',
                     append_to: this.layers.grid,
                 });
             }
@@ -678,6 +678,10 @@ export default class Gantt {
 
         // Sunday = 0, Saturday = 6
         const is_weekend = [0, 6].includes(date.getDay()) 
+        const hours = date.getHours()
+        const is_evening = hours < 8 || 20 <= hours   
+        const grayed = (this.view_is(VIEW_MODE.DAY) && is_weekend) ||
+            (this.view_is(VIEW_MODE.HOUR) && is_evening)
 
         return {
             upper_text: date_text[`${this.options.view_mode}_upper`],
@@ -686,7 +690,7 @@ export default class Gantt {
             upper_y: base_pos.upper_y,
             lower_x: base_pos.x + x_pos[`${this.options.view_mode}_lower`],
             lower_y: base_pos.lower_y,
-            is_weekend: is_weekend,
+            grayed: grayed,
             date: date
         };
     }
