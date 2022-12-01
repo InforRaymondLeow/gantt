@@ -323,6 +323,7 @@ export default class Bar {
             x = (diff * column_width) / 30;
         } else if (this.gantt.view_is('5 Minute')) {
             diff = date_utils.diff(task_start, gantt_start, 'minute');
+            // x = (diff / step / 12) * column_width;
             x = (diff / step / 12) * column_width;
         } else {
             diff = date_utils.diff(task_start, gantt_start, 'hour');
