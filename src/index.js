@@ -542,7 +542,7 @@ export default class Gantt {
         let difference = 0
         if (this.view_is(VIEW_MODE.DAY)) {
             difference = time_diff / (1000 * 3600 * 24)
-        } else if (his.view_is(VIEW_MODE.DAY)) {
+        } else if (this.view_is(VIEW_MODE.DAY)) {
             difference = time_diff / (1000 * 3600)
         } else {
             difference = time_diff / (1000 * 300)
