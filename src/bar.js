@@ -28,7 +28,7 @@ export default class Bar {
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
         this.duration =
-            date_utils.diff(this.task._end, this.task._start, (this.gantt.is_view('5 Minute') ? 'minute':'hour')) /
+            date_utils.diff(this.task._end, this.task._start, (this.gantt.view_is('5 Minute') ? 'minute':'hour')) /
             this.gantt.options.step;
         
         this.width = this.gantt.options.column_width * this.duration;
@@ -292,13 +292,13 @@ export default class Bar {
         const new_start_date = date_utils.add(
             this.gantt.gantt_start,
             x_in_units * this.gantt.options.step,
-            (this.gantt.is_view('5 Minute') ? 'minute' : 'hour')
+            (this.gantt.view_is('5 Minute') ? 'minute' : 'hour')
         );
         const width_in_units = bar.getWidth() / this.gantt.options.column_width;
         const new_end_date = date_utils.add(
             new_start_date,
             width_in_units * this.gantt.options.step,
-            (this.gantt.is_view('5 Minute') ? 'minute' : 'hour')
+            (this.gantt.view_is('5 Minute') ? 'minute' : 'hour')
         );
 
         return { new_start_date, new_end_date };
