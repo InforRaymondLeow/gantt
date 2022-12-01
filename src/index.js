@@ -595,11 +595,10 @@ export default class Gantt {
                 'mm',
                 this.options.language
             ),
-            'Hour_lower': date_utils.format(
-                date,
-                'HH',
-                this.options.language
-            ),
+            'Hour_lower': 
+                correct_lower_text_mod 
+                    ? date_utils.format(date, 'HH',his.options.language) 
+                    : '',
             Day_lower:
                 (correct_lower_text_mod && (date.getDate() !== last_date.getDate() || i === 0))
                     ? date_utils.format(date, 'D', this.options.language)
