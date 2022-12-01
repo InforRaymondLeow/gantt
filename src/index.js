@@ -292,7 +292,7 @@ export default class Gantt {
                     break;
                 }
             }
-            if (cur_date < this.gantt_end) {
+            if (this.gantt_start == this.gantt_end || cur_date < this.gantt_end) {
                 this.dates.push(cur_date);
             }
         }
@@ -522,7 +522,8 @@ export default class Gantt {
                     x: date_info.upper_x,
                     y: date_info.upper_y,
                     innerHTML: date_info.upper_text,
-                    class: 'upper-text',
+                    class: (this.view_is([VIEW_MODE.HOUR, VIEW_MODE.MINUTE]) ? 
+                        'start-upper-text' : 'upper-text'),
                     append_to: this.layers.date,
                 });
 
@@ -661,9 +662,9 @@ export default class Gantt {
             // 'Half Day_lower': (this.options.column_width * 2) / 2,
             // 'Half Day_upper': 0,
             '5 Minute_lower': this.options.column_width / 2,
-            '5 Minute_upper': 0,
+            '5 Minute_upper': 5,
             Hour_lower: this.options.column_width / 2,
-            Hour_upper: 0,
+            Hour_upper: 5,
             Day_lower: this.options.column_width / 2,
             // Day_upper: (this.options.column_width * 30) / 2,
             Day_upper: month_span / 2,

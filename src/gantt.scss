@@ -130,6 +130,10 @@ $handle-color: #ddd !default;
 		font-size: 12px;
 		text-anchor: middle;
 	}
+	.start-upper-text {
+		font-size: 12px;
+		text-anchor: start;
+	}
 	.upper-text {
 		fill: $text-light;
 	}
