@@ -222,21 +222,21 @@ export default class Gantt {
 
     setup_gantt_dates() {
         
-        if (this.view_is([VIEW_MODE.MINUTE])) {
+        // if (this.view_is([VIEW_MODE.MINUTE])) {
             // this.gantt_start = date_utils.add(this.options.start, -10, 'minute')
-            this.gantt_start = this.options.start
-            this.gantt_end = date_utils.add(this.options.start, 2, 'hour')
+            // this.gantt_start = this.options.start
+            // this.gantt_end = date_utils.add(this.options.start, 2, 'hour')
         // } else 
         // if (this.view_is([VIEW_MODE.HOUR])) {
             // this.gantt_start = date_utils.add(this.options.start, -2, 'hour')
             // this.gantt_start = this.options.start
             // this.gantt_end = date_utils.add(this.options.start, 24, 'hour')
-        } else {
+        // } else {
             this.gantt_start = this.options.start
             this.gantt_end = this.options.end
             this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
             this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
-        }
+        // }
 
         for (let task of this.tasks) {
             // set global start and end date
@@ -663,7 +663,7 @@ export default class Gantt {
             '5 Minute_lower': this.options.column_width / 2,
             '5 Minute_upper': 0,
             Hour_lower: this.options.column_width / 2,
-            Hour_upper: 0,
+            Hour_upper: (i === 0 ? 5 : 0),
             Day_lower: this.options.column_width / 2,
             // Day_upper: (this.options.column_width * 30) / 2,
             Day_upper: month_span / 2,
