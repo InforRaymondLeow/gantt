@@ -544,7 +544,7 @@ export default class Gantt {
         const time_diff = final_date.getTime() - first_date.getTime()
         let difference = 0
         if (this.view_is(VIEW_MODE.DAY)) {
-            difference = time_diff / (1000 * 3600 * 24)
+            difference = Math.min(1, time_diff / (1000 * 3600 * 24))
         } else if (this.view_is(VIEW_MODE.HOUR)) {
             difference = time_diff / (1000 * 3600)
         } else {
