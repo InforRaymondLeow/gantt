@@ -27,15 +27,10 @@ export default class Bar {
         this.x = this.compute_x();
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
-        if (this.view_is('5 Minute')) {
-            this.duration =
-                date_utils.diff(this.task._end, this.task._start, 'minute') /
-                this.gantt.options.step;
-        } else {
-            this.duration =
-                date_utils.diff(this.task._end, this.task._start, 'hour') /
-                this.gantt.options.step;
-        }
+        this.duration =
+            date_utils.diff(this.task._end, this.task._start, (this.gantt.is_view('5 Minute') ? 'minute':'hour')) /
+            this.gantt.options.step;
+        
         this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
@@ -297,13 +292,13 @@ export default class Bar {
         const new_start_date = date_utils.add(
             this.gantt.gantt_start,
             x_in_units * this.gantt.options.step,
-            'hour'
+            (this.gantt.is_view('5 Minute') ? 'minute' : 'hour')
         );
         const width_in_units = bar.getWidth() / this.gantt.options.column_width;
         const new_end_date = date_utils.add(
             new_start_date,
             width_in_units * this.gantt.options.step,
-            'hour'
+            (this.gantt.is_view('5 Minute') ? 'minute' : 'hour')
         );
 
         return { new_start_date, new_end_date };
@@ -320,12 +315,18 @@ export default class Bar {
         const task_start = this.task._start;
         const gantt_start = this.gantt.gantt_start;
 
-        const diff = date_utils.diff(task_start, gantt_start, 'hour');
-        let x = (diff / step) * column_width;
+        let diff = 0
+        let x = 0
 
         if (this.gantt.view_is('Month')) {
-            const diff = date_utils.diff(task_start, gantt_start, 'day');
+            diff = date_utils.diff(task_start, gantt_start, 'day');
             x = (diff * column_width) / 30;
+        } else if (this.gantt.view_is('5 Minute')) {
+            diff = date_utils.diff(task_start, gantt_start, 'minute');
+            x = (diff / step) * column_width;
+        } else {
+            diff = date_utils.diff(task_start, gantt_start, 'hour');
+            x = (diff / step) * column_width;
         }
         return x;
     }
