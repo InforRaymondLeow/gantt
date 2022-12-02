@@ -495,7 +495,7 @@ export default class Gantt {
 
             if (date_info.grayed) {
                 const x =
-                (date_utils.diff(date_info.date, this.gantt_start, 'hour') /
+                (date_utils.diff(date_info.date, this.gantt_start, (this.view_is([VIEW_MODE.MINUTE]) ? 'minute' : 'hour')) /
                     this.options.step) *
                 this.options.column_width;
                 const y = this.options.header_height + 
