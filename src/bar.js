@@ -252,7 +252,7 @@ export default class Bar {
         this.update_arrow_position();
     }
 
-    date_changed() {
+    date_changed(is_resizing_right) {
         let changed = false;
         const { new_start_date, new_end_date } = this.compute_start_end_date();
 
@@ -272,7 +272,8 @@ export default class Bar {
             this.task,
             new_start_date,
             date_utils.add(new_end_date, -1, 'second'),
-            this.context
+            this.context,
+            is_resizing_right
         ]);
     }
 

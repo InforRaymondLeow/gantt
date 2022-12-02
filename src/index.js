@@ -863,13 +863,12 @@ export default class Gantt {
             is_resizing_right = false;
         });
 
-        $.on(this.$svg, 'mouseup', (e, element) => {
-            console.log(element)
+        $.on(this.$svg, 'mouseup', (e) => {
             this.bar_being_dragged = null;
             bars.forEach((bar) => {
                 const $bar = bar.$bar;
                 if (!$bar.finaldx) return;
-                bar.date_changed();
+                bar.date_changed(this.is_resizing_right);
                 bar.set_action_completed();
             });
         });
