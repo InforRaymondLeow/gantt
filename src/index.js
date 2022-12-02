@@ -575,10 +575,16 @@ export default class Gantt {
         const days_per_month = new Date(date.getYear(), date.getMonth()+1, 0).getDate()
         const current_day = date.getDate()
         const days_span = Math.min(dates_span, days_per_month - current_day)
-        const lower_text_font_width = 18
+        
+        let lower_text_font_width = 18
+        if (this.view_is(VIEW_MODE.MINUTE)) {
+            lower_text_font_width = 36
+        }
         const month_span = (this.options.column_width * days_span)
         const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
         const correct_lower_text_mod = i % lower_column_threshold === 0
+
+
         const date_text = {
             // 'Quarter Day_lower': date_utils.format(
             //     date,
@@ -591,8 +597,8 @@ export default class Gantt {
             //     this.options.language
             // ),
             '5 Minute_lower': 
-                correct_lower_text_mod 
-                    ? date_utils.format(date, 'mm', this.options.language)
+                (correct_lower_text_mod && (date.getMinutes() === 0 || date.getMinutes() === 30))
+                    ? date_utils.format(date, 'HH:mm', this.options.language)
                     : '',
             'Hour_lower': 
                 correct_lower_text_mod 
@@ -679,7 +685,7 @@ export default class Gantt {
         const hours = date.getHours()
         const is_evening = hours < 8 || 20 <= hours   
         const grayed = (this.view_is(VIEW_MODE.DAY) && is_weekend) ||
-            (this.view_is(VIEW_MODE.HOUR) && is_evening)
+            (this.view_is([VIEW_MODE.HOUR, VIEW_MODE.MINUTE]) && is_evening) 
 
         return {
             upper_text: date_text[`${this.options.view_mode}_upper`],
