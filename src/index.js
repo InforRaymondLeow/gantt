@@ -863,7 +863,8 @@ export default class Gantt {
             is_resizing_right = false;
         });
 
-        $.on(this.$svg, 'mouseup', (e) => {
+        $.on(this.$svg, 'mouseup', (e, element) => {
+            console.log(element)
             this.bar_being_dragged = null;
             bars.forEach((bar) => {
                 const $bar = bar.$bar;
