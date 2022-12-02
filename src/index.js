@@ -868,7 +868,7 @@ export default class Gantt {
             bars.forEach((bar) => {
                 const $bar = bar.$bar;
                 if (!$bar.finaldx) return;
-                bar.date_changed(this.is_resizing_right);
+                bar.date_changed(is_resizing_right);
                 bar.set_action_completed();
             });
         });
