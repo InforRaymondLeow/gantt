@@ -232,10 +232,14 @@ export default class Gantt {
             // this.gantt_start = this.options.start
             // this.gantt_end = date_utils.add(this.options.start, 24, 'hour')
         // } else {
+        if (this.options.start) {
             this.gantt_start = this.options.start
-            this.gantt_end = this.options.end
             this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
+        }
+        if (this.options.end) {
+            this.gantt_end = this.options.end
             this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
+        }
         // }
 
         for (let task of this.tasks) {
