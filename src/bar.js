@@ -28,7 +28,7 @@ export default class Bar {
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
         this.duration =
-            date_utils.diff(this.task._end, this.task._start, (this.gantt.view_is('5 Minute') ? 'minute' : 'hour')) /
+            date_utils.diff(this.task._end, this.task._start, (this.gantt.view_is('5 Minute') ? 'minute' : 'hour'), true) /
             this.gantt.options.step 
             // / (this.gantt.view_is('5 Minute') ? 12 : 1);
         

@@ -237,7 +237,7 @@ export default {
         return str;
     },
 
-    diff(date_a, date_b, scale = DAY) {
+    diff(date_a, date_b, scale = DAY, ceiling = false) {
         let milliseconds, seconds, hours, minutes, days, months, years;
 
         milliseconds = date_a - date_b;
@@ -251,18 +251,19 @@ export default {
         if (!scale.endsWith('s')) {
             scale += 's';
         }
-
-        return Math.floor(
-            {
-                milliseconds,
-                seconds,
-                minutes,
-                hours,
-                days,
-                months,
-                years,
-            }[scale]
-        );
+        const difference = {
+            milliseconds,
+            seconds,
+            minutes,
+            hours,
+            days,
+            months,
+            years,
+        }[scale]
+        if (ceiling) {
+            return Math.ceil(difference)
+        }
+        return Math.floor(difference);
     },
 
     today() {
