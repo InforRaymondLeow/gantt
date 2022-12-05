@@ -582,7 +582,7 @@ export default class Gantt {
         
         let lower_text_font_width = 18
         if (this.view_is([VIEW_MODE.MINUTE, VIEW_MODE.HOUR])) {
-            lower_text_font_width = 36
+            lower_text_font_width = 45
         }
         const month_span = (this.options.column_width * days_span)
         const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
@@ -606,7 +606,7 @@ export default class Gantt {
                     : '',
             'Hour_lower': 
                 (correct_lower_text_mod && (date.getMinutes() === 0 || date.getMinutes() === 30))
-                    ? date_utils.format(date, 'HH', this.options.language) 
+                    ? date_utils.format(date, 'HH:mm', this.options.language) 
                     : '',
             Day_lower:
                 (correct_lower_text_mod && (date.getDate() !== last_date.getDate() || i === 0))
