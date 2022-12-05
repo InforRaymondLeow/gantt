@@ -252,7 +252,7 @@ export default {
             scale += 's';
         }
 
-        return Math.floor(
+        return Math.ceil(
             {
                 milliseconds,
                 seconds,
