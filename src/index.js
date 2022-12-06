@@ -585,9 +585,9 @@ export default class Gantt {
             lower_text_font_width = 45
         }
         const month_span = (this.options.column_width * days_span)
-        const upper_text_font_width = 18
-        const upper_column_threshold = Math.ceil(upper_text_font_width / this.options.column_width)
-        const correct_upper_text_mod = i % upper_column_threshold === 0
+        // const upper_text_font_width = 18
+        // const upper_column_threshold = Math.ceil(upper_text_font_width / this.options.column_width)
+        // const correct_upper_text_mod = i % upper_column_threshold === 0
 
         const lower_column_threshold = Math.ceil(lower_text_font_width / this.options.column_width)
         const correct_lower_text_mod = i % lower_column_threshold === 0
@@ -609,7 +609,7 @@ export default class Gantt {
                     ? date_utils.format(date, 'HH:mm', this.options.language)
                     : '',
             'Hour_lower': 
-                (correct_lower_text_mod && (date.getMinutes() === 0 || date.getMinutes() === 30))
+                (correct_lower_text_mod && date.getMinutes() === 0)
                     ? date_utils.format(date, 'HH:mm', this.options.language) 
                     : '',
             Day_lower:
@@ -645,7 +645,7 @@ export default class Gantt {
                     ? date_utils.format(date, 'D MMM', this.options.language)
                     : '',
             'Hour_upper':
-                (correct_upper_text_mod && date.getDate() !== last_date.getDate())
+                date.getDate() !== last_date.getDate()
                     ? date.getMonth() !== last_date.getMonth()
                         ? date_utils.format(
                               date,
