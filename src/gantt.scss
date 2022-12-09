@@ -148,23 +148,28 @@ $handle-color: #ddd !default;
 	}
 
 	.not-started {
-		fill: #A1E4BF !important;
+		// fill: #A1E4BF !important;
+  		fill: #5cc6c7 !important;
 	}
 	  
 	.ready-to-start {
-		fill: #4DCC86 !important
+		// fill: #4DCC86 !important
+		fill: #1c86ef !important;
 	}
 	  
 	.started {
-		fill: #FA9601 !important
+		// fill: #FA9601 !important
+		fill: #4dcc86 !important;
 	}
 	  
 	.stopped {
-		fill: #B7B7BA !important
+		// fill: #B7B7BA !important
+		fill: #fa9601 !important;
 	}
 
 	.completed {
-		fill: #FA9601 !important
+		// fill: #FA9601 !important
+		fill: #df3539 !important;
 	}
 
 	.default {
