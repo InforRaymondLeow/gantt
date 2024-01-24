@@ -70,16 +70,20 @@ export default class Popup {
                 'px';
 
             // this.pointer.style.transform = 'rotateZ(270deg)';
-            this.pointer.style.left = this.parent.clientWidth + 7 + 'px';
-            this.pointer.style.top = this.parent.clientHeight - 10 - 2 + 'px';
+            // this.pointer.style.left = this.parent.clientWidth + 7 + 'px';
+            // this.pointer.style.top = this.parent.clientHeight - 10 - 2 + 'px';
+            this.pointer.style.left = this.parent.clientWidth + 13 + 'px';
+            this.pointer.style.top = this.parent.clientHeight - 10 - 46 + 'px';
         } else {
             this.parent.style.left =
                 position_meta.x + (position_meta.width + 10) + 'px';
             this.parent.style.top = position_meta.y + 'px';
 
             // this.pointer.style.transform = 'rotateZ(90deg)';
-            this.pointer.style.left = '-7px';
-            this.pointer.style.top = '2px';
+            // this.pointer.style.left = '-7px';
+            // this.pointer.style.top = '2px';
+            this.pointer.style.left = '-13px';
+            this.pointer.style.top = '46px';
         }
 
         // show
