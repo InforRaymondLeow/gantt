@@ -798,7 +798,7 @@ export default class Gantt {
         $.on(
             this.$svg,
             this.options.popup_trigger,
-            '.grid-row, .grid-header .grayed-highlight .today-highlight',
+            '.grid-row, .grid-header, .grayed-highlight, .today-highlight, path, tick',
             () => {
                 this.unselect_all();
                 this.hide_popup();
