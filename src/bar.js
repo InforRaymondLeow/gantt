@@ -13,7 +13,7 @@ export default class Bar {
         this.action_completed = false;
         this.gantt = gantt;
         this.task = task;
-        this.context = context
+        this.context = context;
     }
 
     prepare() {
@@ -28,10 +28,14 @@ export default class Bar {
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
         this.duration =
-            date_utils.diff(this.task._end, this.task._start, (this.gantt.view_is('5 Minute') ? 'minute' : 'hour'), true) /
-            this.gantt.options.step 
-            // / (this.gantt.view_is('5 Minute') ? 12 : 1);
-        
+            date_utils.diff(
+                this.task._end,
+                this.task._start,
+                this.gantt.view_is('5 Minute') ? 'minute' : 'hour',
+                true
+            ) / this.gantt.options.step;
+        // / (this.gantt.view_is('5 Minute') ? 12 : 1);
+
         this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
@@ -129,27 +133,29 @@ export default class Bar {
         const bar = this.$bar;
         const handle_width = 8;
 
-        createSVG('rect', {
-            x: bar.getX() + bar.getWidth() - 9,
-            y: bar.getY() + 1,
-            width: handle_width,
-            height: this.height - 2,
-            rx: this.corner_radius,
-            ry: this.corner_radius,
-            class: 'handle right',
-            append_to: this.handle_group,
-        });
+        if (!this.gantt.options.disable_drag) {
+            createSVG('rect', {
+                x: bar.getX() + bar.getWidth() - 9,
+                y: bar.getY() + 1,
+                width: handle_width,
+                height: this.height - 2,
+                rx: this.corner_radius,
+                ry: this.corner_radius,
+                class: 'handle right',
+                append_to: this.handle_group,
+            });
 
-        createSVG('rect', {
-            x: bar.getX() + 1,
-            y: bar.getY() + 1,
-            width: handle_width,
-            height: this.height - 2,
-            rx: this.corner_radius,
-            ry: this.corner_radius,
-            class: 'handle left',
-            append_to: this.handle_group,
-        });
+            createSVG('rect', {
+                x: bar.getX() + 1,
+                y: bar.getY() + 1,
+                width: handle_width,
+                height: this.height - 2,
+                rx: this.corner_radius,
+                ry: this.corner_radius,
+                class: 'handle left',
+                append_to: this.handle_group,
+            });
+        }
 
         if (this.task.progress && this.task.progress < 100) {
             this.$handle_progress = createSVG('polygon', {
@@ -221,8 +227,8 @@ export default class Bar {
             task: this.task,
             grid_size: {
                 height: this.context.grid_height,
-                width: this.context.grid_width
-            }
+                width: this.context.grid_width,
+            },
         });
     }
 
@@ -273,7 +279,7 @@ export default class Bar {
             new_start_date,
             date_utils.add(new_end_date, -1, 'second'),
             this.context,
-            is_resizing_right
+            is_resizing_right,
         ]);
     }
 
@@ -294,13 +300,13 @@ export default class Bar {
         const new_start_date = date_utils.add(
             this.gantt.gantt_start,
             x_in_units * this.gantt.options.step,
-            (this.gantt.view_is('5 Minute') ? 'minute' : 'hour')
+            this.gantt.view_is('5 Minute') ? 'minute' : 'hour'
         );
         const width_in_units = bar.getWidth() / this.gantt.options.column_width;
         const new_end_date = date_utils.add(
             new_start_date,
             width_in_units * this.gantt.options.step,
-            (this.gantt.view_is('5 Minute') ? 'minute' : 'hour')
+            this.gantt.view_is('5 Minute') ? 'minute' : 'hour'
         );
 
         return { new_start_date, new_end_date };
@@ -317,8 +323,8 @@ export default class Bar {
         const task_start = this.task._start;
         const gantt_start = this.gantt.gantt_start;
 
-        let diff = 0
-        let x = 0
+        let diff = 0;
+        let x = 0;
 
         if (this.gantt.view_is('Month')) {
             diff = date_utils.diff(task_start, gantt_start, 'day');
