@@ -312,7 +312,7 @@ export default class Gantt {
 
     bind_events() {
         this.bind_grid_click();
-        if (this.options.disable_drag) {
+        if (!this.options.disable_drag) {
             this.bind_bar_events();
         }
     }
